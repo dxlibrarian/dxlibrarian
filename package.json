@@ -1,0 +1,46 @@
+{
+  "name": "test-1",
+  "private": true,
+  "version": "1.0.0",
+  "devDependencies": {
+    "@types/jest": "24.0.23",
+    "@types/jsonwebtoken": "8.3.5",
+    "@types/node": "12.12.11",
+    "@types/debug": "4.1.5",
+    "@types/react": "16.9.11",
+    "@types/react-dom": "16.9.4",
+    "@typescript-eslint/eslint-plugin": "2.8.0",
+    "@typescript-eslint/parser": "2.8.0",
+    "eslint": "6.6.0",
+    "eslint-config-airbnb-base": "14.0.0",
+    "eslint-config-prettier": "6.7.0",
+    "eslint-plugin-import": "2.18.2",
+    "eslint-plugin-prettier": "3.1.1",
+    "eslint-plugin-react": "7.16.0",
+    "jest": "24.9.0",
+    "oao": "1.7.0",
+    "prettier": "1.19.1",
+    "ts-jest": "24.1.0",
+    "typescript": "3.7.2"
+  },
+  "peerDependencies": {
+    "aws-sdk": "2.536.0"
+  },
+  "scripts": {
+    "lint": "eslint --ignore-path=.prettierignore './**/*.{js,ts,tsx}'",
+    "prettier": "prettier --write \"**/*.{js,ts,json}\"",
+    "prepare": "yarn workspace server run build",
+    "start": "yarn workspace client run start"
+  },
+  "workspaces": {
+    "packages": [
+      "client",
+      "server",
+      "scripts/*"
+    ],
+    "nohoist": [
+      "**",
+      "**/**"
+    ]
+  }
+}

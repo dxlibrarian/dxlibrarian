@@ -1,0 +1,13 @@
+{
+  "name": "build",
+  "private": true,
+  "version": "0.0.1",
+  "bin": "./bin/index.js",
+  "dependencies": {
+    "archiver": "3.1.1"
+  },
+  "scripts": {
+    "test": "echo || exit 0",
+    "test:f": "echo || exit 0"
+  }
+}
