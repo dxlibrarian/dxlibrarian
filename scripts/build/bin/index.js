@@ -6,21 +6,12 @@ const { execSync } = require('child_process');
 const archiver = require('archiver');
 
 const monorepoDir = path.join(__dirname, '..', '..', '..');
-const serverWorkspaceName = 'server';
 const serverDir = path.join(monorepoDir, 'server');
 const serverZipFile = path.join(monorepoDir, 'server.zip');
 
 const main = async () => {
-  // await execSync(
-  //   `yarn workspace ${serverWorkspaceName} install`,
-  //   {
-  //     cwd: monorepoDir,
-  //     stdio: 'inherit'
-  //   }
-  // )
-
-  await execSync(`yarn workspace ${serverWorkspaceName} run prepare`, {
-    cwd: monorepoDir,
+  await execSync(`yarn tsc`, {
+    cwd: serverDir,
     stdio: 'inherit',
   });
 

@@ -9,6 +9,8 @@
     "@types/debug": "4.1.5",
     "@types/react": "16.9.11",
     "@types/react-dom": "16.9.4",
+    "@types/content-disposition": "0.5.2",
+    "@types/cookie": "0.3.3",
     "@typescript-eslint/eslint-plugin": "2.8.0",
     "@typescript-eslint/parser": "2.8.0",
     "eslint": "6.6.0",
@@ -29,7 +31,7 @@
   "scripts": {
     "lint": "eslint --ignore-path=.prettierignore './**/*.{js,ts,tsx}'",
     "prettier": "prettier --write \"**/*.{js,ts,json}\"",
-    "prepare": "yarn workspace server run build",
+    "prepare": "cd server && yarn run build",
     "start": "yarn workspace client run start"
   },
   "workspaces": {
