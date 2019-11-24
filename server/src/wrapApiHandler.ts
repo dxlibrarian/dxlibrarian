@@ -1,9 +1,20 @@
 import binaryCase from 'binary-case';
 import contentDisposition from 'content-disposition';
-import cookie from 'cookie';
+import cookie, { CookieSerializeOptions } from 'cookie';
 
-const COOKIE_CLEAR_DATE = new Date(0).toGMTString();
-const INTERNAL = Symbol('INTERNAL');
+import {
+  Response,
+  Request,
+  LambdaContext,
+  LambdaEvent,
+  InternalResponse,
+  BufferEncoding,
+  GetCustomParameters,
+  Handler,
+  INTERNAL
+} from './types';
+
+const COOKIE_CLEAR_DATE = new Date(0);
 
 function normalizeKey(key: string, mode: string): string {
   switch (mode) {
@@ -22,15 +33,15 @@ function normalizeKey(key: string, mode: string): string {
   }
 }
 
-const wrapHeadersCaseInsensitive = headersMap =>
-  Object.create(
+function wrapHeadersCaseInsensitive(headersMap: { [key: string]: any }) {
+  return Object.create(
     Object.prototype,
-    Object.keys(headersMap).reduce((acc, key) => {
+    Object.keys(headersMap).reduce(function(acc: PropertyDescriptorMap, key: string): PropertyDescriptorMap {
       const value = headersMap[key];
       const [upperDashKey, dashKey, lowerKey] = [
         normalizeKey(key, 'upper-dash-case'),
         normalizeKey(key, 'dash-case'),
-        normalizeKey(key, 'lower-case'),
+        normalizeKey(key, 'lower-case')
       ];
 
       acc[upperDashKey] = { value, enumerable: true };
@@ -40,23 +51,26 @@ const wrapHeadersCaseInsensitive = headersMap =>
       acc[lowerKey] = { value, enumerable: false };
 
       return acc;
-    }, {}),
+    }, {})
   );
+}
 
-const createRequest = async (lambdaEvent, customParameters) => {
+async function createRequest(lambdaEvent: LambdaEvent, customParameters?: { [key: string]: any }): Promise<Request> {
+  /* eslint-disable prefer-const */
   let {
     path,
     httpMethod,
     headers: { 'x-proxy-headers': proxyHeadersString, ...originalHeaders },
     queryStringParameters,
-    body,
+    body
   } = lambdaEvent;
+  /* eslint-enable prefer-const */
 
   if (proxyHeadersString != null) {
     for (const [headerName, headerValue] of Object.entries(JSON.parse(proxyHeadersString))) {
       const normalizedHeaderName = normalizeKey(headerName, 'upper-dash-case');
       if (headerName.toLowerCase() === 'x-uri') {
-        path = headerValue;
+        path = `${headerValue}`;
       } else {
         for (const originalHeaderName of Object.keys(originalHeaders)) {
           if (normalizeKey(originalHeaderName, 'upper-dash-case') === normalizedHeaderName) {
@@ -72,67 +86,76 @@ const createRequest = async (lambdaEvent, customParameters) => {
   const headers = wrapHeadersCaseInsensitive(originalHeaders);
   const cookies = headers.cookie != null && headers.cookie.constructor === String ? cookie.parse(headers.cookie) : {};
 
-  const req = Object.create(null);
+  const req: Request = Object.create(null);
 
   const query = queryStringParameters != null ? queryStringParameters : {};
 
-  const reqProperties = {
-    adapter: 'awslambda',
+  const reqProperties: Request = {
     method: httpMethod,
     query,
     path,
     headers,
     cookies,
     body,
-    ...customParameters,
+    ...customParameters
   };
 
   for (const name of Object.keys(reqProperties)) {
     Object.defineProperty(req, name, {
       enumerable: true,
-      get: () => reqProperties[name],
-      set: () => {
-        throw new Error(`Request parameters can't be modified`);
+      get: function(): any {
+        return reqProperties[name];
       },
+      set: function() {
+        throw new Error(`Request parameters can't be modified`);
+      }
     });
   }
 
-  return Object.freeze(req);
-};
+  Object.freeze(req);
 
-const createResponse = () => {
-  const internalRes = {
+  return req;
+}
+
+function createResponse(): Response {
+  const internalRes: InternalResponse = {
     status: 200,
     headers: {},
     cookies: [],
     body: '',
-    closed: false,
+    closed: false
   };
 
-  const validateResponseOpened = () => {
+  function validateResponseOpened() {
     if (internalRes.closed) {
       throw new Error('Response already sent');
     }
-  };
+  }
 
-  const validateOptionShape = (fieldName, option, types, nullable = false) => {
+  function validateOptionShape(fieldName: string, option: any, types: Array<any>, nullable = false): void {
     const isValidValue =
       (nullable && option == null) ||
-      !(option == null || !types.reduce((acc, type) => acc || option.constructor === type, false));
+      !(
+        option == null ||
+        !types.reduce(function(acc, type) {
+          return acc || option.constructor === type;
+        }, false)
+      );
     if (!isValidValue) {
       throw new Error(`Variable "${fieldName}" should be one of following types: ${types.join(', ')}`);
     }
-  };
+  }
 
   const res = Object.create(null, { [INTERNAL]: { value: internalRes } });
 
-  const defineResponseMethod = (name, value) =>
+  function defineResponseMethod(name: string, value: any): void {
     Object.defineProperty(res, name, {
       enumerable: true,
-      value,
+      value
     });
+  }
 
-  defineResponseMethod('cookie', (name, value, options) => {
+  defineResponseMethod('cookie', function(name: string, value: string, options: CookieSerializeOptions) {
     validateResponseOpened();
     const serializedCookie = cookie.serialize(name, value, options);
 
@@ -140,25 +163,25 @@ const createResponse = () => {
     return res;
   });
 
-  defineResponseMethod('clearCookie', (name, options) => {
+  defineResponseMethod('clearCookie', function(name: string, options: CookieSerializeOptions) {
     validateResponseOpened();
     const serializedCookie = cookie.serialize(name, '', {
       ...options,
-      expire: COOKIE_CLEAR_DATE,
+      expires: COOKIE_CLEAR_DATE
     });
 
     internalRes.cookies.push(serializedCookie);
     return res;
   });
 
-  defineResponseMethod('status', code => {
+  defineResponseMethod('status', function(code: number) {
     validateResponseOpened();
     validateOptionShape('Status code', code, [Number]);
     internalRes.status = code;
     return res;
   });
 
-  defineResponseMethod('redirect', (path, code) => {
+  defineResponseMethod('redirect', function(path: string, code: number) {
     validateResponseOpened();
     validateOptionShape('Status code', code, [Number], true);
     validateOptionShape('Location path', path, [String]);
@@ -169,13 +192,13 @@ const createResponse = () => {
     return res;
   });
 
-  defineResponseMethod('getHeader', searchKey => {
+  defineResponseMethod('getHeader', function(searchKey: string) {
     validateOptionShape('Header name', searchKey, [String]);
     const normalizedKey = normalizeKey(searchKey, 'upper-dash-case');
     return internalRes.headers[normalizedKey];
   });
 
-  defineResponseMethod('setHeader', (key, value) => {
+  defineResponseMethod('setHeader', function(key: string, value: string) {
     validateResponseOpened();
     validateOptionShape('Header name', key, [String]);
     validateOptionShape('Header value', value, [String]);
@@ -184,7 +207,7 @@ const createResponse = () => {
     return res;
   });
 
-  defineResponseMethod('text', (content, encoding) => {
+  defineResponseMethod('text', function(content: string, encoding: BufferEncoding) {
     validateResponseOpened();
     validateOptionShape('Text', content, [String]);
     validateOptionShape('Encoding', encoding, [String], true);
@@ -193,7 +216,7 @@ const createResponse = () => {
     return res;
   });
 
-  defineResponseMethod('json', content => {
+  defineResponseMethod('json', function(content: string | Buffer) {
     validateResponseOpened();
     internalRes.headers[normalizeKey('Content-Type', 'upper-dash-case')] = 'application/json';
     internalRes.body = JSON.stringify(content);
@@ -201,21 +224,21 @@ const createResponse = () => {
     return res;
   });
 
-  defineResponseMethod('end', (content = '', encoding) => {
+  defineResponseMethod('end', function(content: string | Buffer = '', encoding: BufferEncoding) {
     validateResponseOpened();
     validateOptionShape('Content', content, [String, Buffer]);
     validateOptionShape('Encoding', encoding, [String], true);
-    internalRes.body = content.constructor === String ? Buffer.from(content, encoding) : content;
+    internalRes.body = content.constructor === String ? Buffer.from(content as string, encoding) : content;
 
     internalRes.closed = true;
     return res;
   });
 
-  defineResponseMethod('file', (content, filename, encoding) => {
+  defineResponseMethod('file', function(content: string | Buffer, filename: string, encoding: BufferEncoding) {
     validateResponseOpened();
     validateOptionShape('Content', content, [String, Buffer]);
     validateOptionShape('Encoding', encoding, [String], true);
-    internalRes.body = content.constructor === String ? Buffer.from(content, encoding) : content;
+    internalRes.body = content.constructor === String ? Buffer.from(content as string, encoding) : content;
 
     internalRes.headers['Content-Disposition'] = contentDisposition(filename);
 
@@ -223,23 +246,27 @@ const createResponse = () => {
     return res;
   });
 
-  return Object.freeze(res);
-};
+  Object.freeze(res);
 
-const wrapApiHandler = (handler, getCustomParameters) => async (lambdaEvent, lambdaContext, lambdaCallback) => {
+  return res;
+}
+
+export const wrapApiHandler = (handler: Handler, getCustomParameters: GetCustomParameters) => async (
+  lambdaEvent: LambdaEvent,
+  lambdaContext: LambdaContext
+) => {
   let result;
   try {
     const customParameters =
-      typeof getCustomParameters === 'function'
-        ? await getCustomParameters(lambdaEvent, lambdaContext, lambdaCallback)
-        : {};
+      typeof getCustomParameters === 'function' ? await getCustomParameters(lambdaEvent, lambdaContext) : {};
 
     const req = await createRequest(lambdaEvent, customParameters);
     const res = createResponse();
 
     await handler(req, res);
 
-    const { status: statusCode, headers, cookies, body: bodyBuffer } = res[INTERNAL];
+    const internalResponse: InternalResponse = res[INTERNAL];
+    const { status: statusCode, headers, cookies, body: bodyBuffer } = internalResponse;
     const body = bodyBuffer.toString();
 
     for (let idx = 0; idx < cookies.length; idx++) {
@@ -255,15 +282,9 @@ const wrapApiHandler = (handler, getCustomParameters) => async (lambdaEvent, lam
 
     result = {
       statusCode: 500,
-      body: '',
+      body: ''
     };
   }
 
-  if (typeof lambdaCallback === 'function') {
-    return lambdaCallback(null, result);
-  } else {
-    return result;
-  }
+  return result;
 };
-
-export default wrapApiHandler;

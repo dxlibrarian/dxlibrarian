@@ -18,7 +18,7 @@ const NextComposed = React.forwardRef(function NextComposed(props, ref) {
 NextComposed.propTypes = {
   as: PropTypes.string,
   href: PropTypes.string,
-  prefetch: PropTypes.bool,
+  prefetch: PropTypes.bool
 };
 
 function Link(props) {
@@ -26,7 +26,7 @@ function Link(props) {
   const router = useRouter();
 
   const className = clsx(classNameProps, {
-    [activeClassName]: router.pathname === props.href && activeClassName,
+    [activeClassName]: router.pathname === props.href && activeClassName
   });
 
   if (naked) {
@@ -44,7 +44,7 @@ Link.propTypes = {
   innerRef: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
   naked: PropTypes.bool,
   onClick: PropTypes.func,
-  prefetch: PropTypes.bool,
+  prefetch: PropTypes.bool
 };
 
 const RealLink = React.forwardRef((props, ref) => <Link {...props} innerRef={ref} />);

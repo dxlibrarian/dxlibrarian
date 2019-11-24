@@ -10,7 +10,7 @@ const logLevels: Array<[string, Chalk]> = [
   ['warn', chalk.yellow.inverse],
   ['debug', chalk.white],
   ['info', chalk.green],
-  ['verbose', chalk.white],
+  ['verbose', chalk.white]
 ];
 const emptyFunction = Function(); // eslint-disable-line no-new-func
 
@@ -42,7 +42,7 @@ export function getLog(namespace: string): Log {
         originalLogger(
           `${levelColor(levelName.toUpperCase())} ${args
             .map(arg => (Object(arg) === arg ? util.inspect(arg) : arg))
-            .join(' ')}`,
+            .join(' ')}`
         );
       };
     } else {

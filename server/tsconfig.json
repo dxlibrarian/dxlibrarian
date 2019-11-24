@@ -16,6 +16,6 @@
     "moduleResolution": "node",
     "removeComments": false,
     "resolveJsonModule": true,
-    "types": ["node", "jest", "debug", "./external.d.ts"]
+    "types": ["node", "jest", "debug", "./external"]
   }
 }

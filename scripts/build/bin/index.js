@@ -12,7 +12,7 @@ const serverZipFile = path.join(monorepoDir, 'server.zip');
 const main = async () => {
   await execSync(`yarn tsc`, {
     cwd: serverDir,
-    stdio: 'inherit',
+    stdio: 'inherit'
   });
 
   await new Promise((resolve, reject) => {
@@ -20,8 +20,8 @@ const main = async () => {
 
     const archive = archiver('zip', {
       zlib: {
-        level: 9,
-      },
+        level: 9
+      }
     });
 
     archive.directory(serverDir, false);
