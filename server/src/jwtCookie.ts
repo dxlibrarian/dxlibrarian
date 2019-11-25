@@ -1,3 +1,4 @@
 export const jwtCookie = {
-  name: 'jwt'
+  name: 'jwt',
+  options: { }
 };

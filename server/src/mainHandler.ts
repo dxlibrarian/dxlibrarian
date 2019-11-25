@@ -47,7 +47,51 @@ export async function mainHandler(originalReq: Request, res: Response) {
     case checkPath(req, '/auth', ['GET', 'POST']): {
       const authStrategy = new OIDCStrategy(authOptions, authCallback);
 
-      authStrategy.authenticate(req as any, { response: res });
+      await new Promise(resolve => {
+
+
+
+        Object.defineProperty(authStrategy, 'success', {
+          value: function(user:any, info:any) {
+            console.log({user, info});
+
+            const jwtToken = JSON.stringify({user, info})
+
+            res.cookie(jwtCookie.name, jwtToken, jwtCookie.options)
+
+            // res.redirect(
+            //  '/prod/DXLibrarian/'
+            // )
+
+
+            res.json({user, info});
+            resolve()
+          }
+        })
+        Object.defineProperty(authStrategy, 'fail', {
+          value: function(challenge:any, status:any) {
+            console.log({challenge, status});
+            res.redirect(challenge, status)
+            resolve()
+          }
+        })
+        Object.defineProperty(authStrategy, 'redirect', {
+          value: function(url:any, status:any) {
+            console.log({url, status});
+            res.redirect(url, status)
+            resolve()
+          }
+        })
+        Object.defineProperty(authStrategy, 'pass', {
+          value: function() {
+          console.log('pass');
+          res.end('pass');
+          resolve()}
+        })
+
+        authStrategy.authenticate(req as any, { response: res, failureRedirect: '/prod/DXLibrarian/error' });
+
+      })
 
       break;
     }

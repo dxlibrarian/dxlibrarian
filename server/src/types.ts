@@ -50,7 +50,7 @@ export type Response = {
   getHeader(searchKey: string): Response;
   setHeader(key: string, value: string): Response;
   text(content: string, encoding?: BufferEncoding): Response;
-  json(content: string | Buffer): Response;
+  json(content: object): Response;
   end(content?: string | Buffer, encoding?: BufferEncoding): Response;
   file(content: string | Buffer, filename: string, encoding?: BufferEncoding): Response;
   [INTERNAL]: InternalResponse;

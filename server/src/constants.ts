@@ -9,5 +9,8 @@ if (process.env.AZURE_CLIENT_ID == null) {
 if (process.env.AZURE_CLIENT_SECRET == null) {
   throw new Error('The process.env.AZURE_CLIENT_SECRET is required');
 }
+if (process.env.AZURE_CLIENT_TENANT == null) {
+  throw new Error('The process.env.AZURE_CLIENT_TENANT is required');
+}
 
-export const { AZURE_CLIENT_ID, AZURE_CLIENT_SECRET } = process.env;
+export const { AZURE_CLIENT_ID, AZURE_CLIENT_SECRET, AZURE_CLIENT_TENANT } = process.env;
