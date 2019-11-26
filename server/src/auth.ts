@@ -8,9 +8,11 @@ export const authOptions: IOIDCStrategyOptionWithRequest = {
   responseType: 'id_token code',
   responseMode: 'form_post',
   identityMetadata: 'https://login.microsoftonline.com/common/.well-known/openid-configuration',
-  validateIssuer: true,
-  issuer:AZURE_CLIENT_TENANT,
-  allowHttpForRedirectUrl: true,
+  validateIssuer:false,
+  // validateIssuer: true,
+  // issuer:AZURE_CLIENT_TENANT,
+  allowHttpForRedirectUrl: false,
+  loggingLevel:'info',
   useCookieInsteadOfSession: true,
   cookieEncryptionKeys: [
     {
@@ -23,5 +25,5 @@ export const authOptions: IOIDCStrategyOptionWithRequest = {
 
 export const authCallback: VerifyOIDCFunctionWithReq = (req: any, profile: IProfile, done: VerifyCallback) => {
   console.log('upn', profile.upn);
-  done('JWT');
+  done(null, profile.upn);
 };

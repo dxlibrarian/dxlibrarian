@@ -3,6 +3,7 @@ import { OIDCStrategy } from 'passport-azure-ad';
 import { Request, Response, HTTPMethod } from './types';
 import { jwtCookie } from './jwtCookie';
 import { authOptions, authCallback } from './auth';
+import { wrapRequest } from './wrapRequest';
 
 function checkPath(req: Request, url: string, methods: Array<HTTPMethod>) {
   let lowerCasePath = req.path.toLowerCase();
@@ -18,33 +19,21 @@ function checkPath(req: Request, url: string, methods: Array<HTTPMethod>) {
   return methods.includes(req.method) && lowerCasePath === lowerCaseUrl;
 }
 
+
+
 export async function mainHandler(originalReq: Request, res: Response) {
-  const req: Request = Object.create(originalReq, {
-    path: {
-      get() {
-        return originalReq.path.replace(/^\/DXLibrarian/, '');
-      },
-      set(value: string) {
-        return (originalReq.path = value);
-      },
-      enumerable: true
-    }
-  });
+  const req: Request = wrapRequest(originalReq)
 
-  let jwtToken = req.cookies[jwtCookie.name];
-
-  if (req.headers && req.headers.authorization) {
-    jwtToken = req.headers.authorization.replace(/^Bearer /i, '');
-  }
-
-  req.jwtToken = jwtToken;
-
-  if (jwtToken) {
-    res.setHeader('Authorization', `Bearer ${jwtToken}`);
-  }
+  console.log(req.path)
 
   switch (true) {
+    case checkPath(req, '/auth/callback', ['GET', 'POST']):
     case checkPath(req, '/auth', ['GET', 'POST']): {
+
+      console.log('body', req.body)
+      console.log('headers', req.headers)
+      console.log('query', req.query)
+
       const authStrategy = new OIDCStrategy(authOptions, authCallback);
 
       await new Promise(resolve => {
@@ -59,19 +48,23 @@ export async function mainHandler(originalReq: Request, res: Response) {
 
             res.cookie(jwtCookie.name, jwtToken, jwtCookie.options)
 
-            // res.redirect(
-            //  '/prod/DXLibrarian/'
-            // )
-
 
             res.json({user, info});
+            resolve()
+          }
+        })
+        const failureRedirect = '/prod/DXLibrarian/error'
+        Object.defineProperty(authStrategy, 'error', {
+          value: function(error:Error) {
+            console.log({error});
+            res.redirect(failureRedirect)
             resolve()
           }
         })
         Object.defineProperty(authStrategy, 'fail', {
           value: function(challenge:any, status:any) {
             console.log({challenge, status});
-            res.redirect(challenge, status)
+            res.redirect(failureRedirect, status)
             resolve()
           }
         })
@@ -95,14 +88,18 @@ export async function mainHandler(originalReq: Request, res: Response) {
 
       break;
     }
-    case checkPath(req, '/auth/callback', ['GET', 'POST']): {
-      res.end('/auth/callback');
-      break;
-    }
+    // case checkPath(req, '/auth/callback', ['GET', 'POST']): {
+    //   console.log('body', req.body)
+    //   console.log('headers', req.headers)
+    //   console.log('query', req.query)
+    //
+    //   res.end('/auth/callback')
+    //   break;
+    // }
 
     default: {
-      await res.status(405);
-      await res.end(`Access error: path "${req.path}" is not addressable by current executor`);
+      res.status(405);
+      res.end(`Access error: path "${req.path}" is not addressable by current executor`);
 
       return;
     }

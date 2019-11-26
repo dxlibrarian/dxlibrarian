@@ -46,7 +46,7 @@ export type Response = {
   cookie(name: string, value: string, options: CookieSerializeOptions): Response;
   clearCookie(name: string, options: CookieSerializeOptions): Response;
   status(code: number): Response;
-  redirect(path: string, code: number): Response;
+  redirect(path: string, code?: number): Response;
   getHeader(searchKey: string): Response;
   setHeader(key: string, value: string): Response;
   text(content: string, encoding?: BufferEncoding): Response;
