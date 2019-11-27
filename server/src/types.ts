@@ -38,13 +38,13 @@ export type Request = {
   path: string;
   headers: { [key: string]: any };
   cookies: { [key: string]: any };
-  body: string;
+  body: string | { [key: string]: any };
   [key: string]: any;
 };
 
 export type Response = {
   cookie(name: string, value: string, options: CookieSerializeOptions): Response;
-  clearCookie(name: string, options: CookieSerializeOptions): Response;
+  clearCookie(name: string, options?: CookieSerializeOptions): Response;
   status(code: number): Response;
   redirect(path: string, code?: number): Response;
   getHeader(searchKey: string): Response;
