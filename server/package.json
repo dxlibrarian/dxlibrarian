@@ -10,7 +10,8 @@
     "binary-case": "1.1.4",
     "content-disposition": "0.5.3",
     "cookie": "0.4.0",
-    "passport-azure-ad": "4.2.0"
+    "passport-azure-ad": "4.2.0",
+    "iconv-lite": "0.5.0"
   },
   "peerDependencies": {
     "aws-sdk": "2.536.0"

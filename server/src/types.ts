@@ -38,19 +38,19 @@ export type Request = {
   path: string;
   headers: { [key: string]: any };
   cookies: { [key: string]: any };
-  body: string;
+  body: string | { [key: string]: any };
   [key: string]: any;
 };
 
 export type Response = {
   cookie(name: string, value: string, options: CookieSerializeOptions): Response;
-  clearCookie(name: string, options: CookieSerializeOptions): Response;
+  clearCookie(name: string, options?: CookieSerializeOptions): Response;
   status(code: number): Response;
-  redirect(path: string, code: number): Response;
+  redirect(path: string, code?: number): Response;
   getHeader(searchKey: string): Response;
   setHeader(key: string, value: string): Response;
   text(content: string, encoding?: BufferEncoding): Response;
-  json(content: string | Buffer): Response;
+  json(content: object): Response;
   end(content?: string | Buffer, encoding?: BufferEncoding): Response;
   file(content: string | Buffer, filename: string, encoding?: BufferEncoding): Response;
   [INTERNAL]: InternalResponse;

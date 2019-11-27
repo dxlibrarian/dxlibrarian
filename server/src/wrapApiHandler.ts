@@ -181,7 +181,7 @@ function createResponse(): Response {
     return res;
   });
 
-  defineResponseMethod('redirect', function(path: string, code: number) {
+  defineResponseMethod('redirect', function(path: string, code?: number) {
     validateResponseOpened();
     validateOptionShape('Status code', code, [Number], true);
     validateOptionShape('Location path', path, [String]);
