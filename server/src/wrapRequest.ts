@@ -1,10 +1,12 @@
 import iconv from 'iconv-lite';
 
+import { Request } from './types';
+
 function convertCodepage(content: string, fromEncoding: string, toEncoding: string) {
   return iconv.decode(iconv.encode(content, fromEncoding), toEncoding);
 }
 
-export function wrapRequest(req: any) {
+export function wrapRequest(req: Request<any, any>): Request<any, any> {
   let bodyContent = null;
 
   if (req.body == null || req.headers['content-type'] == null) {

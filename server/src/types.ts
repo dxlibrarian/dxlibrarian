@@ -32,13 +32,13 @@ export interface GetCustomParameters {
   (lambdaEvent: LambdaEvent, lambdaContext: LambdaContext): Promise<{ [key: string]: any }>;
 }
 
-export type Request = {
+export type Request<Body, Query> = {
   method: HTTPMethod;
-  query: { [key: string]: any };
+  body: Body;
+  query: Query;
   path: string;
   headers: { [key: string]: any };
   cookies: { [key: string]: any };
-  body: string | { [key: string]: any };
   [key: string]: any;
 };
 
@@ -65,5 +65,5 @@ export type InternalResponse = {
 };
 
 export interface Handler {
-  (req: Request, res: Response): Promise<any>;
+  (req: Request<any, any>, res: Response): Promise<any>;
 }

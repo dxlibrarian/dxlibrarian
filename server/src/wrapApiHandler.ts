@@ -55,7 +55,10 @@ function wrapHeadersCaseInsensitive(headersMap: { [key: string]: any }) {
   );
 }
 
-async function createRequest(lambdaEvent: LambdaEvent, customParameters?: { [key: string]: any }): Promise<Request> {
+async function createRequest(
+  lambdaEvent: LambdaEvent,
+  customParameters?: { [key: string]: any }
+): Promise<Request<string, any>> {
   /* eslint-disable prefer-const */
   let {
     path,
@@ -86,11 +89,11 @@ async function createRequest(lambdaEvent: LambdaEvent, customParameters?: { [key
   const headers = wrapHeadersCaseInsensitive(originalHeaders);
   const cookies = headers.cookie != null && headers.cookie.constructor === String ? cookie.parse(headers.cookie) : {};
 
-  const req: Request = Object.create(null);
+  const req: Request<string, any> = Object.create(null);
 
   const query = queryStringParameters != null ? queryStringParameters : {};
 
-  const reqProperties: Request = {
+  const reqProperties: Request<string, any> = {
     method: httpMethod,
     query,
     path,

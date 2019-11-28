@@ -5,7 +5,7 @@ import { authStrategy } from './authStrategy';
 import { getLog } from './getLog';
 import { CLIENT_ORIGIN, JWT_SECRET } from './constants';
 
-export async function authHandler(req: Request, res: Response) {
+export async function authHandler(req: Request<{ state?: string }, { redirectUrl?: string }>, res: Response) {
   const log = getLog('dxlibrarian:authHandler');
 
   log.debug('Auth strategy. Start');
@@ -18,7 +18,7 @@ export async function authHandler(req: Request, res: Response) {
         value: function(user: object) {
           const jwtToken = sign(user, JWT_SECRET, { noTimestamp: true });
 
-          const redirectUrl = Object(req.body)?.state?.split(':::')[1] || '/';
+          const redirectUrl = req.body?.state?.split(':::')[1] || '/';
 
           res.redirect(encodeURI(`${CLIENT_ORIGIN}${redirectUrl}?jwtToken=${jwtToken}`));
           resolve();
