@@ -1,6 +1,6 @@
 import { join } from 'path';
-import { Response } from './types';
-import { APPLICATION_BASE_URL } from './constants';
+import { Response } from '../types';
+import { APPLICATION_BASE_URL } from '../constants';
 
 // Scheme: https://tools.ietf.org/html/rfc3986#section-3.1
 // Absolute URL: https://tools.ietf.org/html/rfc3986#section-4.3

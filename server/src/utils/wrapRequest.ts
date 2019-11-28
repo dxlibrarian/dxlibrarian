@@ -1,6 +1,6 @@
 import iconv from 'iconv-lite';
 
-import { Request } from './types';
+import { Request } from '../types';
 
 function convertCodepage(content: string, fromEncoding: string, toEncoding: string) {
   return iconv.decode(iconv.encode(content, fromEncoding), toEncoding);

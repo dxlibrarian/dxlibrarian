@@ -1,10 +1,11 @@
-import { Request, Response } from './types';
-import { wrapRequest } from './wrapRequest';
-import { wrapResponse } from './wrapResponse';
-import { checkPath } from './checkPath';
+import { Request, Response } from '../types';
+import { wrapRequest } from '../utils/wrapRequest';
+import { wrapResponse } from '../utils/wrapResponse';
+import { checkPath } from '../utils/checkPath';
 import { authHandler } from './authHandler';
 import { publishHandler } from './publishHandler';
 import { readHandler } from './readHandler';
+import { notFoundHandler } from './notFoundHandler';
 
 export async function mainHandler(originalReq: Request<any, any>, originalRes: Response) {
   const req = wrapRequest(originalReq);
@@ -24,12 +25,8 @@ export async function mainHandler(originalReq: Request<any, any>, originalRes: R
       case checkPath(req, '/api/read', ['GET']): {
         return await readHandler(req, res);
       }
-
       default: {
-        res.status(405);
-        res.end(`Access error: path "${req.path}" is not addressable by current executor`);
-
-        return;
+        return await notFoundHandler(req, res);
       }
     }
   } catch (error) {

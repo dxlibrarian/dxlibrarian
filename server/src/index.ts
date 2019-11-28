@@ -1,6 +1,6 @@
 import { LambdaEvent, LambdaContext } from './types';
-import { wrapApiHandler } from './wrapApiHandler';
-import { mainHandler } from './mainHandler';
+import { wrapApiHandler } from './utils/wrapApiHandler';
+import { mainHandler } from './handlers/mainHandler';
 
 function getCustomParameters<T>(customParameters: T) {
   return customParameters;

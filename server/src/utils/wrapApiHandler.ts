@@ -12,7 +12,7 @@ import {
   GetCustomParameters,
   Handler,
   INTERNAL
-} from './types';
+} from '../types';
 
 const COOKIE_CLEAR_DATE = new Date(0);
 
