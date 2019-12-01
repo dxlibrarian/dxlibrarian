@@ -6,7 +6,6 @@
     "rootDir": "src",
     "outDir": "lib",
     "strict": false,
-    "strictNullChecks": true,
     "allowSyntheticDefaultImports": true,
     "noImplicitAny": true,
     "esModuleInterop": true,

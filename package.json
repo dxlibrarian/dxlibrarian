@@ -1,5 +1,6 @@
 {
-  "name": "test-1",
+  "name": "dxlibrarian",
+  "license": "MIT",
   "private": true,
   "version": "1.0.0",
   "devDependencies": {
@@ -13,6 +14,7 @@
     "@types/cookie": "0.3.3",
     "@types/passport-azure-ad":"4.0.3",
     "@types/mongodb":"3.3.11",
+    "@types/deasync": "0.1.0",
     "@typescript-eslint/eslint-plugin": "2.8.0",
     "@typescript-eslint/parser": "2.8.0",
     "eslint": "6.6.0",
