@@ -3,7 +3,7 @@ import { sign } from 'jsonwebtoken';
 import { Request, Response } from '../types';
 import { authStrategy } from '../auth/authStrategy';
 import { getLog } from '../utils/getLog';
-import { CLIENT_ORIGIN, JWT_SECRET } from '../constants';
+import { GITHUB_IO_ORIGIN, JWT_SECRET } from '../constants';
 
 export async function authHandler(req: Request<{ state?: string }, { redirectUrl?: string }>, res: Response) {
   const log = getLog('dxlibrarian:authHandler');
@@ -20,7 +20,7 @@ export async function authHandler(req: Request<{ state?: string }, { redirectUrl
 
           const redirectUrl = req.body?.state?.split(':::')[1] || '/';
 
-          res.redirect(encodeURI(`${CLIENT_ORIGIN}${redirectUrl}?jwtToken=${jwtToken}`));
+          res.redirect(encodeURI(`${GITHUB_IO_ORIGIN}${redirectUrl}?jwtToken=${jwtToken}`));
           resolve();
         },
         enumerable: true,

@@ -16,6 +16,18 @@
     "moduleResolution": "node",
     "removeComments": false,
     "resolveJsonModule": true,
-    "types": ["node", "jest", "debug", "./external"]
+    "types": [
+      "node",
+      "jest",
+      "debug",
+      "passport-azure-ad",
+      "cookie",
+      "content-disposition",
+      "react-dom",
+      "react",
+      "jsonwebtoken",
+      "mongodb",
+      "./external"
+    ]
   }
 }

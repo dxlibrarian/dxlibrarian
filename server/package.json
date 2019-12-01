@@ -11,7 +11,8 @@
     "content-disposition": "0.5.3",
     "cookie": "0.4.0",
     "passport-azure-ad": "4.2.0",
-    "iconv-lite": "0.5.0"
+    "iconv-lite": "0.5.0",
+    "mongodb": "3.3.5"
   },
   "peerDependencies": {
     "aws-sdk": "2.536.0"

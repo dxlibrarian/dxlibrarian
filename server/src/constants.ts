@@ -1,10 +1,15 @@
-export const APPLICATION_PROTOCOL = 'https';
-export const APPLICATION_HOST = 'oy7p4wmpmi.execute-api.us-east-1.amazonaws.com';
-export const APPLICATION_BASE_URL = '/prod/DXLibrarian';
-export const APPLICATION_ORIGIN = `${APPLICATION_PROTOCOL}://${APPLICATION_HOST}${APPLICATION_BASE_URL}`;
-
-export const CLIENT_ORIGIN = 'https://dxlibrarian.github.io';
-
+if (process.env.GATEWAY_PROTOCOL == null) {
+  throw new Error('The process.env.GATEWAY_PROTOCOL is required');
+}
+if (process.env.GATEWAY_HOST == null) {
+  throw new Error('The process.env.GATEWAY_HOST is required');
+}
+if (process.env.GATEWAY_BASE_URL == null) {
+  throw new Error('The process.env.GATEWAY_BASE_URL is required');
+}
+if (process.env.GITHUB_IO_ORIGIN == null) {
+  throw new Error('The process.env.GITHUB_IO_ORIGIN is required');
+}
 if (process.env.AZURE_CLIENT_ID == null) {
   throw new Error('The process.env.AZURE_CLIENT_ID is required');
 }
@@ -14,5 +19,31 @@ if (process.env.AZURE_CLIENT_SECRET == null) {
 if (process.env.JWT_SECRET == null) {
   throw new Error('The process.env.JWT_SECRET is required');
 }
+if (process.env.MONGO_USER == null) {
+  throw new Error('The process.env.MONGO_USER is required');
+}
+if (process.env.MONGO_PASSWORD == null) {
+  throw new Error('The process.env.MONGO_PASSWORD is required');
+}
+if (process.env.MONGO_DOMAIN == null) {
+  throw new Error('The process.env.MONGO_DOMAIN is required');
+}
+if (process.env.MONGO_DATABASE == null) {
+  throw new Error('The process.env.MONGO_DATABASE is required');
+}
 
-export const { AZURE_CLIENT_ID, AZURE_CLIENT_SECRET, JWT_SECRET } = process.env;
+export const {
+  AZURE_CLIENT_ID,
+  AZURE_CLIENT_SECRET,
+  JWT_SECRET,
+  MONGO_USER,
+  MONGO_PASSWORD,
+  MONGO_DOMAIN,
+  MONGO_DATABASE,
+  GITHUB_IO_ORIGIN,
+  GATEWAY_PROTOCOL,
+  GATEWAY_HOST,
+  GATEWAY_BASE_URL
+} = process.env;
+
+export const GATEWAY_ORIGIN = `${GATEWAY_PROTOCOL}://${GATEWAY_HOST}${GATEWAY_BASE_URL}`;
