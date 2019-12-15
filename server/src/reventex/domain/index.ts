@@ -2,10 +2,13 @@ import { ObjectId, MongoClient, SessionOptions, ClientSession, Collection } from
 
 import { extractEntityIdsFromEvent } from '../utils/extract-entity-ids-from-event';
 import { PRIVATE } from '../constants';
-import { MutationMongoApi } from '../mutation-api';
+
 import { SideEffect } from '../side-effect';
 import { Projection } from '../projection';
 import { TEvent } from '../event';
+import { EntityId } from '../entity-id';
+import { effectFactory as api } from '../effects/effect-factory';
+import { processor } from '../effects/mongo/processor';
 
 const sessionOptions: SessionOptions = {
   causalConsistency: true,
@@ -20,6 +23,9 @@ function checkRequiredFields<A extends Array<any>, B extends any>(domain: Domain
     if (domain[PRIVATE].eventStoreCollectionName == null) {
       throw new Error('Event store is required');
     }
+    if (domain[PRIVATE].eventStoreMetaCollectionName == null) {
+      throw new Error('Event store meta is required');
+    }
     if (domain[PRIVATE].databaseName == null) {
       throw new Error('Database name is required');
     }
@@ -29,22 +35,20 @@ function checkRequiredFields<A extends Array<any>, B extends any>(domain: Domain
 
 class Domain {
   [PRIVATE]: {
-    api: MutationMongoApi;
     projections: Array<Projection>;
     sideEffects: Array<SideEffect>;
     databaseName: string;
     eventStoreCollectionName: string;
+    eventStoreMetaCollectionName: string;
     resolverClient: Promise<MongoClient>;
     builderClient: Promise<MongoClient>;
     resolverSession: Promise<ClientSession>;
     builderSession: Promise<ClientSession>;
-    [key: string]: any;
   };
 
   constructor() {
     Object.defineProperty(this, PRIVATE, {
       value: {
-        api: new MutationMongoApi(),
         projections: [],
         sideEffects: [],
         documentId: ObjectId
@@ -85,6 +89,7 @@ class Domain {
   }
   eventStore(eventStoreCollectionName: string) {
     this[PRIVATE].eventStoreCollectionName = eventStoreCollectionName;
+    this[PRIVATE].eventStoreMetaCollectionName = `${eventStoreCollectionName}-meta`;
     return this;
   }
   database(databaseName: string) {
@@ -93,11 +98,11 @@ class Domain {
   }
   async build() {
     const {
-      api,
       builderClient,
       builderSession,
       databaseName,
       eventStoreCollectionName,
+      eventStoreMetaCollectionName,
       projections,
       sideEffects
     } = this[PRIVATE];
@@ -107,7 +112,10 @@ class Domain {
 
     const collectionPromises: Array<Promise<any>> = [];
 
-    collectionPromises.push(database.createCollection(eventStoreCollectionName, { session }));
+    collectionPromises.push(
+      database.createCollection(eventStoreCollectionName, { session }),
+      database.createCollection(eventStoreMetaCollectionName, { session })
+    );
 
     for (const {
       [PRIVATE]: { name }
@@ -118,6 +126,7 @@ class Domain {
     await Promise.all(collectionPromises);
 
     const eventStore = database.collection(eventStoreCollectionName);
+    const eventStoreMeta = database.collection(eventStoreMetaCollectionName);
 
     const indexPromises: Array<Promise<any>> = [];
 
@@ -132,6 +141,13 @@ class Domain {
       eventStore.createIndex(
         {
           'entityId.documentVersion': 1
+        },
+        { session }
+      ),
+      eventStoreMeta.createIndex(
+        {
+          entityName: 1,
+          documentId: 1
         },
         { session }
       )
@@ -173,28 +189,44 @@ class Domain {
 
         const collection = database.collection(entityName);
 
-        api[PRIVATE].collection = collection;
-        api[PRIVATE].documentId = new ObjectId(documentId);
-        api[PRIVATE].session = session;
+        const documentIdAsObjectId = new ObjectId(documentId);
+
         for (let projectionIndex = 0; projectionIndex < countProjections; projectionIndex++) {
           const projection = projections[projectionIndex];
           const eventHandler = projection[PRIVATE].eventHandlers[event.type];
 
           if (entityName === projection[PRIVATE].name && eventHandler != null) {
-            eventHandler({
+            const iterator = eventHandler({
               event,
               documentId,
               api
             });
+
+            for (const effect of iterator) {
+              await processor(
+                {
+                  documentId: documentIdAsObjectId,
+                  collection,
+                  session
+                },
+                effect
+              );
+            }
           }
         }
       }
     }
   }
   async drop(options?: { eventStore?: boolean }) {
-    const { builderClient, builderSession, databaseName, eventStoreCollectionName, projections, sideEffects } = this[
-      PRIVATE
-    ];
+    const {
+      builderClient,
+      builderSession,
+      databaseName,
+      eventStoreCollectionName,
+      eventStoreMetaCollectionName,
+      projections,
+      sideEffects
+    } = this[PRIVATE];
 
     const database = await (await builderClient).db(databaseName);
     const session = await builderSession;
@@ -205,7 +237,9 @@ class Domain {
 
     if (options != null && options.eventStore) {
       const eventStore = database.collection(eventStoreCollectionName);
+      const eventStoreMeta = database.collection(eventStoreMetaCollectionName);
       collections.push(eventStore);
+      collections.push(eventStoreMeta);
     }
 
     for (const {
@@ -234,27 +268,26 @@ class Domain {
     const {
       projections,
       sideEffects,
-      api,
       builderClient,
       builderSession,
       databaseName,
-      eventStoreCollectionName
+      eventStoreCollectionName,
+      eventStoreMetaCollectionName
     } = this[PRIVATE];
 
-    const countProjections = projections.length;
     const countSideEffects = sideEffects.length;
     const countEvents = events.length;
     const databasePromises: Array<Promise<any>> = [];
-    const otherPromises = [];
 
-    await (await builderSession).startTransaction();
+    const session = await builderSession;
+
+    await session.startTransaction();
     const database = await (await builderClient).db(databaseName);
 
     const eventStore = database.collection(eventStoreCollectionName);
+    const eventStoreMeta = database.collection(eventStoreMetaCollectionName);
 
-    const entityIdsByEvent = new WeakMap();
-
-    const session = await builderSession;
+    const entityIdsByEvent = new WeakMap<TEvent, Array<EntityId>>();
 
     try {
       for (let eventIndex = 0; eventIndex < countEvents; eventIndex++) {
@@ -262,47 +295,88 @@ class Domain {
         const entityIds = extractEntityIdsFromEvent(event);
 
         entityIdsByEvent.set(event, entityIds);
+      }
+
+      for (let eventIndex = 0; eventIndex < countEvents; eventIndex++) {
+        const event = events[eventIndex];
+        const entityIds = entityIdsByEvent.get(event);
+
         const countEntityIds = entityIds.length;
 
+        const entityNameIndexes = new Map<string, number>();
         for (let entityIdIndex = 0; entityIdIndex < countEntityIds; entityIdIndex++) {
           const { entityName, documentId } = entityIds[entityIdIndex];
 
+          const documentIdAsObjectId = new ObjectId(documentId);
+
+          entityNameIndexes.set(entityName, entityIdIndex);
+
+          const { documentVersion: originalDocumentVersion } =
+            (await eventStoreMeta.findOne(
+              {
+                entityName,
+                documentId: documentIdAsObjectId
+              },
+              {
+                projection: { documentVersion: 1 },
+                session
+              }
+            )) || {};
+          let documentVersion = originalDocumentVersion;
+
           const collection = database.collection(entityName);
 
-          api[PRIVATE].collection = collection;
-          api[PRIVATE].documentId = new ObjectId(documentId);
-          api[PRIVATE].session = session;
-          for (let projectionIndex = 0; projectionIndex < countProjections; projectionIndex++) {
-            const projection = projections[projectionIndex];
+          const projection = projections.find(({ [PRIVATE]: { name } }) => name === entityName);
+          if (projection != null) {
             const eventHandler = projection[PRIVATE].eventHandlers[event.type];
 
             if (entityName === projection[PRIVATE].name && eventHandler != null) {
-              eventHandler({
+              const iterator = eventHandler({
                 event,
                 documentId,
                 api
               });
+
+              for (const effect of iterator) {
+                await processor(
+                  {
+                    documentId: documentIdAsObjectId,
+                    collection,
+                    session
+                  },
+                  effect
+                );
+              }
+              documentVersion = ~~documentVersion + 1;
             }
           }
 
-          const { _version } = await collection.findOne(
-            {
-              _id: new ObjectId(documentId)
-            },
-            {
-              projection: { _version: 1 },
-              session
-            }
-          );
-          entityIds[entityIdIndex].documentVersion = _version;
+          entityIds[entityIdIndex].documentVersion = documentVersion;
         }
 
+        for (const entityIdIndex of entityNameIndexes.values()) {
+          const { entityName, documentVersion, documentId } = entityIds[entityIdIndex];
+
+          const documentIdAsObjectId = new ObjectId(documentId);
+
+          await eventStoreMeta.updateOne(
+            {
+              entityName,
+              documentId: documentIdAsObjectId
+            },
+            { $set: { documentVersion } },
+            {
+              session,
+              upsert: true
+            }
+          );
+        }
         await eventStore.insertOne(
           {
             entityId: entityIds,
             ...event
           },
-          { session: session }
+          { session }
         );
       }
 
@@ -320,19 +394,15 @@ class Domain {
             const eventHandler = projection[PRIVATE].eventHandlers[event.type];
 
             if (entityName === projection[PRIVATE].name && eventHandler != null) {
-              otherPromises.push(
-                eventHandler({
-                  event,
-                  documentId,
-                  api
-                })
-              );
+              await eventHandler({
+                event,
+                documentId,
+                api
+              });
             }
           }
         }
       }
-
-      await Promise.all(otherPromises);
 
       await session.commitTransaction();
     } catch (error) {

@@ -1,5 +1,5 @@
 import { TEvent } from '../event';
-import { TMutationApi } from '../mutation-api/mutation-api';
+import { Effect, EffectFactory } from '../effects/types';
 
 export type TEventHandler = ({
   documentId,
@@ -8,15 +8,5 @@ export type TEventHandler = ({
 }: {
   documentId: string;
   event: TEvent;
-  api: TMutationApi;
-}) => void;
-
-export type TAsyncEventHandler = ({
-  documentId,
-  event,
-  api
-}: {
-  documentId: string;
-  event: TEvent;
-  api: TMutationApi;
-}) => Promise<void>;
+  api: EffectFactory;
+}) => IterableIterator<Effect>;

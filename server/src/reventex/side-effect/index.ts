@@ -1,6 +1,6 @@
 import { IndexOptions } from 'mongodb';
 
-import { TAsyncEventHandler } from '../event-handler';
+import { TEventHandler } from '../event-handler';
 
 import { PRIVATE } from '../constants';
 
@@ -13,7 +13,7 @@ export class SideEffect {
     name: string;
     indexes: Array<[Index] | [Index, IndexOptions]>;
     eventHandlers: {
-      [key: string]: TAsyncEventHandler;
+      [key: string]: TEventHandler;
     };
   };
 
@@ -35,7 +35,7 @@ export class SideEffect {
       options != null ? [keyAndIndexTypeSpecification, options] : [keyAndIndexTypeSpecification]
     );
   }
-  on(eventType: string, eventHandler: TAsyncEventHandler) {
+  on(eventType: string, eventHandler: TEventHandler) {
     if (this[PRIVATE].eventHandlers[eventType] != null) {
       throw new Error(`Event handler "${eventType}" already exists`);
     }
@@ -54,7 +54,7 @@ const sideEffect = {
       options != null ? [keyAndIndexTypeSpecification, options] : [keyAndIndexTypeSpecification]
     );
   },
-  on(eventType: string, eventHandler: TAsyncEventHandler) {
+  on(eventType: string, eventHandler: TEventHandler) {
     const instance = new SideEffect();
     return instance.on(eventType, eventHandler);
   }

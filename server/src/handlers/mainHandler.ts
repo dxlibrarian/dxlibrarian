@@ -35,6 +35,6 @@ export async function mainHandler(originalReq: Request<any, any>, originalRes: R
     } else {
       res.status(500);
     }
-    res.end(error.stack);
+    res.end(error.stack || 'Unknown error');
   }
 }
