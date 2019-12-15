@@ -6,7 +6,7 @@ import {
   Response,
   Request,
   LambdaContext,
-  LambdaEvent,
+  GatewayEvent,
   InternalResponse,
   BufferEncoding,
   GetCustomParameters,
@@ -56,7 +56,7 @@ function wrapHeadersCaseInsensitive(headersMap: { [key: string]: any }) {
 }
 
 async function createRequest(
-  lambdaEvent: LambdaEvent,
+  lambdaEvent: GatewayEvent,
   customParameters?: { [key: string]: any }
 ): Promise<Request<string, any>> {
   /* eslint-disable prefer-const */
@@ -255,7 +255,7 @@ function createResponse(): Response {
 }
 
 export const wrapApiHandler = (handler: Handler, getCustomParameters: GetCustomParameters) => async (
-  lambdaEvent: LambdaEvent,
+  lambdaEvent: GatewayEvent,
   lambdaContext: LambdaContext
 ) => {
   let result;

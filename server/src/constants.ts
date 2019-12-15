@@ -31,6 +31,12 @@ if (process.env.MONGO_DOMAIN == null) {
 if (process.env.MONGO_DATABASE == null) {
   throw new Error('The process.env.MONGO_DATABASE is required');
 }
+if (process.env.INT_DX_AUTH == null) {
+  throw new Error('The process.env.INT_DX_AUTH is required');
+}
+if (process.env.AVATAR_SALT == null) {
+  throw new Error('The process.env.AVATAR_SALT is required');
+}
 
 export const {
   AZURE_CLIENT_ID,
@@ -43,7 +49,9 @@ export const {
   GITHUB_IO_ORIGIN,
   GATEWAY_PROTOCOL,
   GATEWAY_HOST,
-  GATEWAY_BASE_URL
+  GATEWAY_BASE_URL,
+  INT_DX_AUTH,
+  AVATAR_SALT
 } = process.env;
 
 export const GATEWAY_ORIGIN = `${GATEWAY_PROTOCOL}://${GATEWAY_HOST}${GATEWAY_BASE_URL}`;

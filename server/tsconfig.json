@@ -16,6 +16,8 @@
     "removeComments": false,
     "resolveJsonModule": true,
     "types": [
+      "axios",
+      "md5",
       "node",
       "jest",
       "debug",

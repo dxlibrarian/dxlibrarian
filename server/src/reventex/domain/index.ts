@@ -371,12 +371,21 @@ class Domain {
             }
           );
         }
-        await eventStore.insertOne(
+        await eventStore.updateOne(
+          { _id: new ObjectId() },
           {
-            entityId: entityIds,
-            ...event
+            $currentDate: {
+              timestamp: true
+            },
+            $setOnInsert: {
+              ...event,
+              entityId: entityIds
+            }
           },
-          { session }
+          {
+            session,
+            upsert: true
+          }
         );
       }
 

@@ -34,6 +34,7 @@ export class Projection {
     this[PRIVATE].indexes.push(
       options != null ? [keyAndIndexTypeSpecification, options] : [keyAndIndexTypeSpecification]
     );
+    return this;
   }
   on(eventType: string, eventHandler: TEventHandler) {
     if (this[PRIVATE].eventHandlers[eventType] != null) {

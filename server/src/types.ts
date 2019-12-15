@@ -16,20 +16,42 @@ export type BufferEncoding =
   | 'binary'
   | 'hex';
 
-export type LambdaEvent = {
+export enum LambdaEventType {
+  IMPORT_USERS = 'IMPORT_USERS',
+  BUILD_PROJECTIONS = 'BUILD_PROJECTIONS',
+  DROP_PROJECTIONS = 'DROP_PROJECTIONS',
+  DROP_PROJECTIONS_AND_EVENT_STORE = 'DROP_PROJECTIONS_AND_EVENT_STORE'
+}
+
+export type GatewayEvent = {
   path: string;
   httpMethod: HTTPMethod;
   headers: { [key: string]: any };
   queryStringParameters?: { [key: string]: any };
   body: string;
+  type: void;
 };
+
+export type LambdaEvent =
+  | {
+      type: LambdaEventType.IMPORT_USERS;
+    }
+  | {
+      type: LambdaEventType.BUILD_PROJECTIONS;
+    }
+  | {
+      type: LambdaEventType.DROP_PROJECTIONS;
+    }
+  | {
+      type: LambdaEventType.DROP_PROJECTIONS_AND_EVENT_STORE;
+    };
 
 export type LambdaContext = {
   [key: string]: any;
 };
 
 export interface GetCustomParameters {
-  (lambdaEvent: LambdaEvent, lambdaContext: LambdaContext): Promise<{ [key: string]: any }>;
+  (lambdaEvent: GatewayEvent, lambdaContext: LambdaContext): Promise<{ [key: string]: any }>;
 }
 
 export type Request<Body, Query> = {
