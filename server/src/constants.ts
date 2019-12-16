@@ -16,6 +16,9 @@ if (process.env.AZURE_CLIENT_ID == null) {
 if (process.env.AZURE_CLIENT_SECRET == null) {
   throw new Error('The process.env.AZURE_CLIENT_SECRET is required');
 }
+if (process.env.AZURE_CLIENT_TENANT == null) {
+  throw new Error('The process.env.AZURE_CLIENT_TENANT is required');
+}
 if (process.env.JWT_SECRET == null) {
   throw new Error('The process.env.JWT_SECRET is required');
 }
@@ -41,6 +44,7 @@ if (process.env.AVATAR_SALT == null) {
 export const {
   AZURE_CLIENT_ID,
   AZURE_CLIENT_SECRET,
+  AZURE_CLIENT_TENANT,
   JWT_SECRET,
   MONGO_USER,
   MONGO_PASSWORD,

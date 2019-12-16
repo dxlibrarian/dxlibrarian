@@ -2527,6 +2527,13 @@ cli-width@^2.0.0:
   resolved "https://registry.yarnpkg.com/cli-width/-/cli-width-2.2.0.tgz#ff19ede8a9a5e579324147b0c11f0fbcbabed639"
   integrity sha1-/xnt6Kml5XkyQUewwR8PvLq+1jk=
 
+client-credentials@1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/client-credentials/-/client-credentials-1.1.1.tgz#20553869709ad4be0b1995045c32a876233d92b5"
+  integrity sha512-YsQWpJMdWqk9ZezhJ4WuTR9sooanA1qjvHOUIeE6yR/8hFnKbOZhPArTjIyYkwvZ0l3iGZm0fRpdWnaqeqciIQ==
+  dependencies:
+    request "^2.88.0"
+
 clipboardy@1.2.3:
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/clipboardy/-/clipboardy-1.2.3.tgz#0526361bf78724c1f20be248d428e365433c07ef"
@@ -4105,6 +4112,13 @@ graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.2.0
   resolved "https://registry.yarnpkg.com/graceful-readlink/-/graceful-readlink-1.0.1.tgz#4cafad76bc62f02fa039b2f94e9a3dd3a391a725"
   integrity sha1-TK+tdrxi8C+gObL5Tpo906ORpyU=
 
+graph-service@2.1.3:
+  version "2.1.3"
+  resolved "https://registry.yarnpkg.com/graph-service/-/graph-service-2.1.3.tgz#76a0524ca0a1c15fc43de6d0385487f23f2a4e71"
+  integrity sha512-qapWB1QbQDhpNn7hjx9koNf1fJFqR1Ft2FmkEMThIZzxRYwQjQz1HZcheVwjkAoaAf8sSQuEvbrylVefP0lugg==
+  dependencies:
+    https-service "^2.1.2"
+
 growly@^1.3.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/growly/-/growly-1.3.0.tgz#f10748cbe76af964b7c96c93c6bcc28af120c081"
@@ -4283,6 +4297,11 @@ https-browserify@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/https-browserify/-/https-browserify-1.0.0.tgz#ec06c10e0a34c0f2faf199f7fd7fc78fffd03c73"
   integrity sha1-7AbBDgo0wPL68Zn3/X/Hj//QPHM=
+
+https-service@^2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/https-service/-/https-service-2.1.2.tgz#792f028cf4b71f1a4616e12603fec1b1599f0566"
+  integrity sha512-TFV+SBLqi7vCKgdV+wrZwoCVydKHC6B1fc2QgKYMQEOxco/94YraRROeR0ww2KeXeYzF88tswSulXVcY02O5kg==
 
 hyphenate-style-name@^1.0.3:
   version "1.0.3"
@@ -7645,7 +7664,7 @@ request-promise-native@^1.0.5:
     stealthy-require "^1.1.1"
     tough-cookie "^2.3.3"
 
-request@^2.72.0, request@^2.87.0:
+request@^2.72.0, request@^2.87.0, request@^2.88.0:
   version "2.88.0"
   resolved "https://registry.yarnpkg.com/request/-/request-2.88.0.tgz#9c2fca4f7d35b592efe57c7f0a55e81052124fef"
   integrity sha512-NAqBSrijGLZdM0WZNsInLJpkJokL72XYjUpnB0iwsRgxh7dB6COrHnTBNwN0E+lHDAJzu7kLAkDeY08z2/A0hg==
