@@ -5,19 +5,12 @@ export default projection
   .name('user')
   .index({ id: 1 }, { unique: true })
   .on(Events.USER_CREATED, function*({ event, api: { set } }) {
-    let { firstName, lastName, nameInRussian, email, office, location, id, avatarToken } = event.payload;
-
-    email = email.toLowerCase();
+    const { id, name, email } = event.payload;
 
     yield set({
-      firstName,
-      lastName,
-      nameInRussian,
-      email,
-      office,
-      location,
       id,
-      avatarToken
+      name,
+      email
     });
   })
   .on(Events.USER_UPDATED, function*({ event, api: { merge } }) {

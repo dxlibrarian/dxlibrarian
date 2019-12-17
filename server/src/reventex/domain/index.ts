@@ -5,6 +5,7 @@ import { PRIVATE } from '../constants';
 
 import { SideEffect } from '../side-effect';
 import { Projection } from '../projection';
+import { Resolver } from '../resolver';
 import { TEvent } from '../event';
 import { EntityId } from '../entity-id';
 import { effectFactory as api } from '../effects/effect-factory';
@@ -37,6 +38,7 @@ class Domain {
   [PRIVATE]: {
     projections: Array<Projection>;
     sideEffects: Array<SideEffect>;
+    resolvers: Map<string, Resolver>;
     databaseName: string;
     eventStoreCollectionName: string;
     eventStoreMetaCollectionName: string;
@@ -51,6 +53,7 @@ class Domain {
       value: {
         projections: [],
         sideEffects: [],
+        resolvers: new Map(),
         documentId: ObjectId
       }
     });
@@ -58,6 +61,7 @@ class Domain {
     this.publish = checkRequiredFields(this, this.publish);
     this.build = checkRequiredFields(this, this.build);
     this.drop = checkRequiredFields(this, this.drop);
+    this.read = checkRequiredFields(this, this.read);
     this.close = checkRequiredFields(this, this.close);
   }
   connect(builderClient: Promise<any>, resolverClient?: Promise<any>) {
@@ -85,6 +89,15 @@ class Domain {
   }
   sideEffects(sideEffects: Array<SideEffect>) {
     this[PRIVATE].sideEffects.push(...sideEffects);
+    return this;
+  }
+  resolvers(resolvers: Array<Resolver>) {
+    for (const resolver of resolvers) {
+      const {
+        [PRIVATE]: { name }
+      } = resolver;
+      this[PRIVATE].resolvers.set(name, resolver);
+    }
     return this;
   }
   eventStore(eventStoreCollectionName: string) {
@@ -426,6 +439,18 @@ class Domain {
       await (await resolverClient).close();
     }
   }
+  async read(resolverName: string, resolverArgs: { [key: string]: any }) {
+    const { resolvers, builderClient, builderSession, databaseName } = this[PRIVATE];
+
+    const resolver = resolvers.get(resolverName);
+    if (resolver == null) {
+      throw new Error(`The resolver "${resolverName}" is not found`);
+    }
+    const session = await builderSession;
+    const database = await (await builderClient).db(databaseName);
+
+    return resolver.read({ database, session }, resolverArgs);
+  }
 }
 
 export const domain = {
@@ -445,8 +470,12 @@ export const domain = {
     const instance = new Domain();
     return instance.eventStore(eventStoreCollectionName);
   },
-  close() {
+  resolvers(resolvers: Array<Resolver>) {
     const instance = new Domain();
-    return instance.close();
+    return instance.resolvers(resolvers);
   }
+  // close() {
+  //   const instance = new Domain();
+  //   return instance.close();
+  // }
 };

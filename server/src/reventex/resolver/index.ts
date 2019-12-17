@@ -1,22 +1,50 @@
-import { MongoClient } from 'mongodb';
+import { Db, ClientSession } from 'mongodb';
 
-import { TEntityId } from '../entity-id';
+import { PRIVATE } from '../constants';
 
-class Resolver {
-  mongoClient: MongoClient;
+type Reader = (client: { database: Db; session: ClientSession }, args: { [key: string]: any }) => Promise<any>;
 
-  constructor(mongoClient: MongoClient) {
-    this.mongoClient = mongoClient;
+export class Resolver {
+  [PRIVATE]: {
+    name: string;
+    on: Reader;
+  };
+
+  constructor() {
+    Object.defineProperty(this, PRIVATE, {
+      value: Object.create(null)
+    });
+    this.read = this.read.bind(this);
   }
-  async read(entityId: TEntityId) {
-    const { entityName, documentId } = entityId;
-    console.log({ entityName, documentId });
-    return {};
+
+  name(name: string) {
+    if (this[PRIVATE].name != null) {
+      throw new Error(`The name "${name}" already exists`);
+    }
+    this[PRIVATE].name = name;
+    return this;
+  }
+
+  on(on: Reader) {
+    if (this[PRIVATE].on != null) {
+      throw new Error(`Reader already exists`);
+    }
+    this[PRIVATE].on = on;
+    return this;
+  }
+
+  read(client: { database: Db; session: ClientSession }, args: { [key: string]: any }): Promise<any> {
+    return this[PRIVATE].on(client, args);
   }
 }
 
 export const resolver = {
-  connect(mongoClient: MongoClient) {
-    return new Resolver(mongoClient);
+  name(name: string) {
+    const instance = new Resolver();
+    return instance.name(name);
+  },
+  on(on: Reader) {
+    const instance = new Resolver();
+    return instance.on(on);
   }
 };
