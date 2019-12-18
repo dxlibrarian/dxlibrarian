@@ -1,7 +1,7 @@
-import { entityId } from './entity-id/';
-import { domain } from './domain/';
-import { projection } from './projection/';
-import { sideEffect } from './side-effect/';
-import { resolver } from './resolver/';
+import { entityId, EntityId } from './entity-id/';
+import { domain, Domain } from './domain/';
+import { projection, Projection } from './projection/';
+import { sideEffect, SideEffect } from './side-effect/';
+import { resolver, Resolver } from './resolver/';
 
-export { entityId, domain, projection, sideEffect, resolver };
+export { entityId, EntityId, domain, Domain, projection, Projection, sideEffect, SideEffect, resolver, Resolver };

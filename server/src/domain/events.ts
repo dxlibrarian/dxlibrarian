@@ -1,5 +1,0 @@
-export enum Events {
-  USER_CREATED = 'USER_CREATED',
-  USER_UPDATED = 'USER_UPDATED',
-  USER_REMOVED = 'USER_REMOVED'
-}

@@ -1,10 +1,14 @@
-import md5 from 'md5';
-import axios from 'axios';
-
 import ClientCredentials from 'client-credentials';
 import GraphService from 'graph-service';
 
-import { INT_DX_AUTH, AVATAR_SALT, AZURE_CLIENT_SECRET, AZURE_CLIENT_ID, AZURE_CLIENT_TENANT } from '../constants';
+import { entityId } from '../reventex/server';
+import { createDomain } from '../domain/createDomain';
+import { Event, EntityName } from '../constants';
+import { getLog } from '../utils/getLog';
+
+const log = getLog('dxlibrarian:import-users');
+
+import { AZURE_CLIENT_SECRET, AZURE_CLIENT_ID, AZURE_CLIENT_TENANT, Resolver } from '../constants';
 
 const azureCredentials = new ClientCredentials(AZURE_CLIENT_TENANT, AZURE_CLIENT_ID, AZURE_CLIENT_SECRET);
 
@@ -63,12 +67,61 @@ function prepareUser(azureUser: { id: string; displayName: string; userPrincipal
 }
 
 export async function importUsers() {
-  const graphServiceResponse = await graphService.all('/users');
+  const { read, publish, close } = createDomain();
 
-  const users = graphServiceResponse.data.filter(isUser).map(prepareUser);
+  try {
+    log.debug('Import users has been started');
+    const [graphServiceResponse, mongoUsers] = await Promise.all([
+      graphService.all('/users'),
+      read(Resolver.GET_ALL_USERS, {})
+    ]);
+    log.debug('Mongo and Azure users have been fetched');
 
-  console.log('users');
-  console.log(JSON.stringify(users, null, 2));
+    const events: Array<{ type: string; payload?: { [key: string]: any } }> = [];
 
-  return users;
+    for (const azureUser of graphServiceResponse.data.filter(isUser).map(prepareUser)) {
+      const mongoUser = mongoUsers.get(azureUser.id);
+      if (mongoUser != null) {
+        if (azureUser.name !== mongoUser.name || azureUser.email !== mongoUser.email) {
+          events.push({
+            type: Event.USER_UPDATED,
+            payload: {
+              ...azureUser,
+              id: entityId(EntityName.USER, azureUser.id)
+            }
+          });
+        }
+      } else {
+        events.push({
+          type: Event.USER_CREATED,
+          payload: {
+            ...azureUser,
+            id: entityId(EntityName.USER, azureUser.id)
+          }
+        });
+      }
+      mongoUsers.delete(azureUser.id);
+    }
+    for (const [_, { id, ...other }] of mongoUsers) {
+      events.push({
+        type: Event.USER_REMOVED,
+        payload: {
+          ...other,
+          id: entityId(EntityName.USER, id)
+        }
+      });
+    }
+
+    log.debug(`Events count: ${events.length}`);
+
+    log.debug('Operation "publish" has been started');
+    await publish(events);
+    log.debug('Operation "publish" has been finished');
+  } finally {
+    log.debug('Operation "close" has been started');
+    await close();
+    log.debug('Operation "close" has been finished');
+
+    log.debug('Import users has been finished');
+  }
 }

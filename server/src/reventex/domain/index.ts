@@ -34,7 +34,7 @@ function checkRequiredFields<A extends Array<any>, B extends any>(domain: Domain
   };
 }
 
-class Domain {
+export class Domain {
   [PRIVATE]: {
     projections: Array<Projection>;
     sideEffects: Array<SideEffect>;

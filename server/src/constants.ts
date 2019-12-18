@@ -59,3 +59,20 @@ export const {
 } = process.env;
 
 export const GATEWAY_ORIGIN = `${GATEWAY_PROTOCOL}://${GATEWAY_HOST}${GATEWAY_BASE_URL}`;
+
+export enum Event {
+  USER_CREATED = 'USER_CREATED',
+  USER_UPDATED = 'USER_UPDATED',
+  USER_REMOVED = 'USER_REMOVED'
+}
+
+export enum EntityName {
+  USER = 'Users'
+}
+
+export enum Resolver {
+  GET_ALL_USERS = 'getAllUsers'
+}
+
+export const DATABASE_NAME = 'DXLibrarian';
+export const EVENT_STORE_COLLECTION_NAME = 'Events';
