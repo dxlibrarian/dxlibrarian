@@ -1,6 +1,6 @@
 import { sign } from 'jsonwebtoken';
 
-import { Request, Response } from '../types';
+import { Request, Response } from '../constants';
 import { authStrategy } from '../auth/authStrategy';
 import { getLog } from '../utils/getLog';
 import { GITHUB_IO_ORIGIN, JWT_SECRET } from '../constants';

@@ -9,7 +9,7 @@ import { createDomain } from '../domain/createDomain';
 import { Event, EntityName } from '../constants';
 import { getLog } from '../utils/getLog';
 
-import { AzureUser, DXLibrarianUser } from '../types';
+import { AzureUser, DXLibrarianUser } from '../constants';
 
 const log = getLog('dxlibrarian:import-users');
 

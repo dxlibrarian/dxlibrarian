@@ -1,5 +1,5 @@
 import { join } from 'path';
-import { Response } from '../types';
+import { Response } from '../constants';
 import { GATEWAY_BASE_URL } from '../constants';
 
 // Scheme: https://tools.ietf.org/html/rfc3986#section-3.1

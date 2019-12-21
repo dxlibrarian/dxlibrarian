@@ -1,4 +1,4 @@
-import { Request, Response } from '../types';
+import { Request, Response } from '../constants';
 import { wrapRequest } from '../utils/wrapRequest';
 import { wrapResponse } from '../utils/wrapResponse';
 import { checkPath } from '../utils/checkPath';

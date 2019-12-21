@@ -1,4 +1,4 @@
-import { Request, HTTPMethod } from '../types';
+import { Request, HTTPMethod } from '../constants';
 
 export function checkPath(req: Request<any, any>, url: string, methods: Array<HTTPMethod>) {
   let lowerCasePath = req.path.toLowerCase();

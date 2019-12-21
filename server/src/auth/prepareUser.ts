@@ -1,7 +1,7 @@
 import { prepareDisplayName } from './prepareDisplayName';
 import { prepareOID } from './prepareOID';
 import { prepareEmail } from './prepareEmail';
-import { AzureUser, DXLibrarianUser } from '../types';
+import { AzureUser, DXLibrarianUser } from '../constants';
 
 export function prepareUser(user: AzureUser): DXLibrarianUser {
   return {

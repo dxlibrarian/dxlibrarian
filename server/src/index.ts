@@ -1,4 +1,4 @@
-import { GatewayEvent, LambdaContext, LambdaEvent, LambdaEventType } from './types';
+import { GatewayEvent, LambdaContext, LambdaEvent, LambdaEventType } from './constants';
 import { wrapApiHandler } from './utils/wrapApiHandler';
 import { mainHandler } from './handlers/mainHandler';
 import { importUsers } from './executors/importUsers';

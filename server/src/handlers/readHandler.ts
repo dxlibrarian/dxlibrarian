@@ -1,4 +1,4 @@
-import { Request, Response } from '../types';
+import { Request, Response } from '../constants';
 
 export async function readHandler(
   req: Request<

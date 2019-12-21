@@ -12,7 +12,7 @@ import { prepareDisplayName } from './prepareDisplayName';
 import { prepareEmail } from './prepareEmail';
 import { prepareOID } from './prepareOID';
 import { validate } from '../utils/validate';
-import { DXLibrarianUser } from '../types';
+import { DXLibrarianUser } from '../constants';
 
 export const authOptions: IOIDCStrategyOptionWithRequest = {
   redirectUrl: `${GATEWAY_ORIGIN}/auth/callback`,
