@@ -18,6 +18,7 @@ export default projection
     );
 
     const { userId, name, email } = event.payload;
+
     const activeBooks: Array<string> = [];
     const trackedBooks: Array<string> = [];
     const likedBooks: Array<string> = [];
@@ -32,6 +33,9 @@ export default projection
       likedBooks,
       historyBooks
     });
+  })
+  .on(Event.USER_REMOVED, function*({ api: { remove } }) {
+    yield remove();
   })
   .on(Event.USER_UPDATED, function*({ event, api: { merge } }) {
     validate(
@@ -56,6 +60,94 @@ export default projection
       location
     });
   })
-  .on(Event.USER_REMOVED, function*({ api: { remove } }) {
-    yield remove();
+  .on(Event.BOOK_LIKED_BY_USER, function*({ event, api: { pushFront } }) {
+    validate(
+      event.payload,
+      tcomb.struct({
+        bookId: tcomb.String,
+        userId: tcomb.String
+      })
+    );
+
+    const { bookId } = event.payload;
+
+    yield pushFront('likedBooks', bookId);
+  })
+  .on(Event.BOOK_DISLIKED_BY_USER, function*({ event, api: { pullEQ } }) {
+    validate(
+      event.payload,
+      tcomb.struct({
+        bookId: tcomb.String,
+        userId: tcomb.String
+      })
+    );
+
+    const { bookId } = event.payload;
+
+    yield pullEQ('likedBooks', bookId);
+  })
+  .on(Event.BOOK_TRACKED_BY_USER, function*({ event, api: { pushFront } }) {
+    validate(
+      event.payload,
+      tcomb.struct({
+        bookId: tcomb.String,
+        userId: tcomb.String
+      })
+    );
+
+    const { bookId } = event.payload;
+
+    yield pushFront('trackedBooks', bookId);
+  })
+  .on(Event.BOOK_UNTRACKED_BY_USER, function*({ event, api: { pullEQ } }) {
+    validate(
+      event.payload,
+      tcomb.struct({
+        bookId: tcomb.String,
+        userId: tcomb.String
+      })
+    );
+
+    const { bookId } = event.payload;
+
+    yield pullEQ('trackedBooks', bookId);
+  })
+  .on(Event.BOOK_TAKEN_BY_USER, function*({ event, api: { pushFront } }) {
+    validate(
+      event.payload,
+      tcomb.struct({
+        bookId: tcomb.String,
+        userId: tcomb.String
+      })
+    );
+
+    const { bookId } = event.payload;
+
+    yield pushFront('activeBooks', bookId);
+  })
+  .on(Event.BOOK_RETURNED_BY_USER, function*({ event, api: { pullEQ } }) {
+    validate(
+      event.payload,
+      tcomb.struct({
+        bookId: tcomb.String,
+        userId: tcomb.String
+      })
+    );
+
+    const { bookId } = event.payload;
+
+    yield pullEQ('activeBooks', bookId);
+  })
+  .on(Event.BOOK_TAKEN_BY_USER, function*({ event, api: { pushFront } }) {
+    validate(
+      event.payload,
+      tcomb.struct({
+        bookId: tcomb.String,
+        userId: tcomb.String
+      })
+    );
+
+    const { bookId } = event.payload;
+
+    yield pushFront('historyBooks', bookId);
   });

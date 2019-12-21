@@ -21,16 +21,18 @@ export default projection
         title: tcomb.String,
         author: tcomb.String,
         count: tcomb.Number,
+        pageCount: tcomb.Number,
         location: tcomb.enums.of([Location.TULA, Location.KALUGA, Location.SPB]),
         ISBN: tcomb.maybe(tcomb.String),
         tags: tcomb.list(tcomb.String),
-        pageCount: tcomb.maybe(tcomb.Number),
         img: tcomb.maybe(tcomb.String)
       })
     );
 
     const likes: Array<string> = [];
-    const { bookId, userId, title, author, count, location, ISBN, tags, pageCount, img } = event.payload;
+    const activeUsers: Array<string> = [];
+    const trackers: Array<string> = [];
+    const { bookId, userId, title, author, count, pageCount, location, ISBN, tags, img } = event.payload;
 
     yield set({
       userId,
@@ -38,11 +40,155 @@ export default projection
       title,
       author,
       count,
+      pageCount,
       location,
       ISBN,
       tags,
-      pageCount,
       img,
-      likes
+      likes,
+      activeUsers,
+      trackers
     });
+  })
+  .on(Event.BOOK_REMOVED, function*({ event, api: { remove } }) {
+    validate(
+      event.payload,
+      tcomb.struct({
+        bookId: tcomb.String
+      })
+    );
+
+    yield remove();
+  })
+  .on(Event.BOOK_UPDATED, function*({ event, api: { set } }) {
+    validate(
+      event.payload,
+      tcomb.struct({
+        bookId: tcomb.String,
+        key: tcomb.enums.of(['title', 'author', 'count', 'location', 'ISBN', 'tags', 'pageCount', 'img'])
+      })
+    );
+
+    const { key, value } = event.payload;
+
+    switch (key) {
+      case 'title':
+      case 'author':
+      case 'ISBN':
+      case 'img': {
+        validate(
+          event.payload,
+          tcomb.struct({
+            bookId: tcomb.String,
+            key: tcomb.String,
+            value: tcomb.String
+          })
+        );
+        break;
+      }
+      case 'count':
+      case 'pageCount': {
+        validate(
+          event.payload,
+          tcomb.struct({
+            bookId: tcomb.String,
+            key: tcomb.String,
+            value: tcomb.String
+          })
+        );
+        break;
+      }
+      case 'location': {
+        validate(
+          event.payload,
+          tcomb.struct({
+            bookId: tcomb.String,
+            key: tcomb.String,
+            value: tcomb.enums.of([Location.TULA, Location.KALUGA, Location.SPB])
+          })
+        );
+        break;
+      }
+    }
+
+    yield set(key, value);
+  })
+  .on(Event.BOOK_LIKED_BY_USER, function*({ event, api: { pushFront } }) {
+    validate(
+      event.payload,
+      tcomb.struct({
+        bookId: tcomb.String,
+        userId: tcomb.String
+      })
+    );
+
+    const { userId } = event.payload;
+
+    yield pushFront('likes', userId);
+  })
+  .on(Event.BOOK_DISLIKED_BY_USER, function*({ event, api: { pullEQ } }) {
+    validate(
+      event.payload,
+      tcomb.struct({
+        bookId: tcomb.String,
+        userId: tcomb.String
+      })
+    );
+
+    const { userId } = event.payload;
+
+    yield pullEQ('likes', userId);
+  })
+  .on(Event.BOOK_TRACKED_BY_USER, function*({ event, api: { pushFront } }) {
+    validate(
+      event.payload,
+      tcomb.struct({
+        bookId: tcomb.String,
+        userId: tcomb.String
+      })
+    );
+
+    const { userId } = event.payload;
+
+    yield pushFront('trackers', userId);
+  })
+  .on(Event.BOOK_UNTRACKED_BY_USER, function*({ event, api: { pullEQ } }) {
+    validate(
+      event.payload,
+      tcomb.struct({
+        bookId: tcomb.String,
+        userId: tcomb.String
+      })
+    );
+
+    const { userId } = event.payload;
+
+    yield pullEQ('trackers', userId);
+  })
+
+  .on(Event.BOOK_TAKEN_BY_USER, function*({ event, api: { pushFront } }) {
+    validate(
+      event.payload,
+      tcomb.struct({
+        bookId: tcomb.String,
+        userId: tcomb.String
+      })
+    );
+
+    const { userId } = event.payload;
+
+    yield pushFront('activeUsers', userId);
+  })
+  .on(Event.BOOK_RETURNED_BY_USER, function*({ event, api: { pullEQ } }) {
+    validate(
+      event.payload,
+      tcomb.struct({
+        bookId: tcomb.String,
+        userId: tcomb.String
+      })
+    );
+
+    const { userId } = event.payload;
+
+    yield pullEQ('activeUsers', userId);
   });
