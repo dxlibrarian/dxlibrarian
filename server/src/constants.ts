@@ -63,15 +63,42 @@ export const GATEWAY_ORIGIN = `${GATEWAY_PROTOCOL}://${GATEWAY_HOST}${GATEWAY_BA
 export enum Event {
   USER_CREATED = 'USER_CREATED',
   USER_UPDATED = 'USER_UPDATED',
-  USER_REMOVED = 'USER_REMOVED'
+  USER_REMOVED = 'USER_REMOVED',
+
+  USER_SETTINGS_UPDATED = 'USER_SETTINGS_UPDATED',
+
+  BOOK_CREATED = 'BOOK_CREATED',
+  BOOK_UPDATED = 'BOOK_UPDATED',
+  BOOK_REMOVED = 'BOOK_REMOVED',
+
+  BOOK_TAKEN_BY_USER = 'BOOK_TAKEN_BY_USER',
+  BOOK_RETURNED_BY_USER = 'BOOK_RETURNED_BY_USER',
+
+  BOOK_LIKED_BY_USER = 'BOOK_LIKED_BY_USER',
+  BOOK_DISLIKED_BY_USER = 'BOOK_DISLIKED_BY_USER',
+
+  BOOK_TRACKED_BY_USER = 'BOOK_TRACKED_BY_USER',
+  BOOK_UNTRACKED_BY_USER = 'BOOK_UNTRACKED_BY_USER'
 }
 
 export enum EntityName {
-  USER = 'Users'
+  USER = 'Users',
+  BOOK = 'Books'
+}
+
+export enum Location {
+  TULA = 'Tula',
+  KALUGA = 'Kaluga',
+  SPB = 'Saint Petersburg'
 }
 
 export enum Resolver {
-  GET_ALL_USERS = 'getAllUsers'
+  GET_ALL_USERS = 'getAllUsers',
+  GET_USER = 'getUser',
+  SEARCH_BOOKS = 'searchBooks',
+  SHOW_MY_ACTIVE_BOOKS = 'showMyActiveBooks',
+  SHOW_MY_TRACKED_BOOKS = 'showMyTrackedBooks',
+  SHOW_MY_BOOK_HISTORY = 'showMyBookHistory'
 }
 
 export const DATABASE_NAME = 'DXLibrarian';

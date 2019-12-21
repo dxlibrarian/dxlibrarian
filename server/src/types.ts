@@ -89,3 +89,18 @@ export type InternalResponse = {
 export interface Handler {
   (req: Request<any, any>, res: Response): Promise<any>;
 }
+
+export type AzureUser = {
+  id: string;
+  displayName: string;
+  userPrincipalName: string;
+  accountEnabled: boolean;
+  assignedLicenses: Array<any>;
+  mail: string;
+};
+
+export type DXLibrarianUser = {
+  userId: string;
+  name: string;
+  email: string;
+};

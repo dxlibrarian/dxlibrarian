@@ -3,7 +3,9 @@ import { MongoClient } from 'mongodb';
 import { domain } from '../reventex/server';
 
 import users from './projections/users';
+import books from './projections/books';
 import getAllUsers from './resolvers/getAllUsers';
+import getUser from './resolvers/getUser';
 
 import {
   MONGO_USER,
@@ -26,5 +28,5 @@ export const createDomain = () =>
     )
     .database(DATABASE_NAME)
     .eventStore(EVENT_STORE_COLLECTION_NAME)
-    .projections([users])
-    .resolvers([getAllUsers]);
+    .projections([users, books])
+    .resolvers([getAllUsers, getUser]);

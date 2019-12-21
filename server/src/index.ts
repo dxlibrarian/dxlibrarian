@@ -1,7 +1,10 @@
 import { GatewayEvent, LambdaContext, LambdaEvent, LambdaEventType } from './types';
 import { wrapApiHandler } from './utils/wrapApiHandler';
 import { mainHandler } from './handlers/mainHandler';
-import { importUsers } from './import-users';
+import { importUsers } from './executors/importUsers';
+import { dropProjections } from './executors/dropProjections';
+import { dropProjectionsAndEventStore } from './executors/dropProjectionsAndEventStore';
+import { buildProjections } from './executors/buildProjections';
 
 function getCustomParameters<T>(customParameters: T) {
   return customParameters;
@@ -19,6 +22,15 @@ export default (event: any, context: LambdaContext) => {
   switch (lambdaEvent.type) {
     case LambdaEventType.IMPORT_USERS: {
       return importUsers();
+    }
+    case LambdaEventType.DROP_PROJECTIONS: {
+      return dropProjections();
+    }
+    case LambdaEventType.DROP_PROJECTIONS_AND_EVENT_STORE: {
+      return dropProjectionsAndEventStore();
+    }
+    case LambdaEventType.BUILD_PROJECTIONS: {
+      return buildProjections();
     }
     default: {
       throw new Error(`Unknown event ${JSON.stringify(event)}, context ${JSON.stringify(context)}`);
