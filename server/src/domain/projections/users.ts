@@ -124,6 +124,7 @@ export default projection
     const { bookId } = event.payload;
 
     yield pushFront('activeBooks', bookId);
+    yield pushFront('historyBooks', bookId);
   })
   .on(Event.BOOK_RETURNED_BY_USER, function*({ event, api: { pullEQ } }) {
     validate(
@@ -137,17 +138,4 @@ export default projection
     const { bookId } = event.payload;
 
     yield pullEQ('activeBooks', bookId);
-  })
-  .on(Event.BOOK_TAKEN_BY_USER, function*({ event, api: { pushFront } }) {
-    validate(
-      event.payload,
-      tcomb.struct({
-        bookId: tcomb.String,
-        userId: tcomb.String
-      })
-    );
-
-    const { bookId } = event.payload;
-
-    yield pushFront('historyBooks', bookId);
   });

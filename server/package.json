@@ -17,7 +17,8 @@
     "axios": "0.19.0",
     "client-credentials":"1.1.1",
     "graph-service":"2.1.3",
-    "tcomb-validation":"3.4.1"
+    "tcomb-validation":"3.4.1",
+    "escape-string-regexp": "2.0.0"
   },
   "peerDependencies": {
     "aws-sdk": "2.536.0"

@@ -126,7 +126,9 @@ export enum LambdaEventType {
   IMPORT_USERS = 'IMPORT_USERS',
   BUILD_PROJECTIONS = 'BUILD_PROJECTIONS',
   DROP_PROJECTIONS = 'DROP_PROJECTIONS',
-  DROP_PROJECTIONS_AND_EVENT_STORE = 'DROP_PROJECTIONS_AND_EVENT_STORE'
+  DROP_PROJECTIONS_AND_EVENT_STORE = 'DROP_PROJECTIONS_AND_EVENT_STORE',
+  CREATE_BOOK = 'CREATE_BOOK',
+  READ = 'READ'
 }
 
 export type GatewayEvent = {
@@ -150,6 +152,14 @@ export type LambdaEvent =
     }
   | {
       type: LambdaEventType.DROP_PROJECTIONS_AND_EVENT_STORE;
+    }
+  | {
+      type: LambdaEventType.CREATE_BOOK;
+      payload: { [key: string]: any };
+    }
+  | {
+      type: LambdaEventType.READ;
+      payload: { [key: string]: any };
     };
 
 export type LambdaContext = {

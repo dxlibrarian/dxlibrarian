@@ -9,6 +9,7 @@ export default projection
   .index({ bookId: 1 }, { unique: true })
   .index({ userId: 1 })
   .index({ title: 1 })
+  .index({ author: 1 })
   .index({ location: 1 })
   .index({ tags: 1 })
   .index({ likes: 1 })
