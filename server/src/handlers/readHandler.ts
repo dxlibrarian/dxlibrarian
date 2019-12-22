@@ -4,11 +4,11 @@ export async function readHandler(
   req: Request<
     any,
     {
-      entityName: string;
-      documentId: string;
+      jwtToken: string;
     }
   >,
   res: Response
 ): Promise<void> {
+  const { jwtToken } = req.query;
   res.end('ok');
 }
