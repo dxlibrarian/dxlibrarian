@@ -10,14 +10,16 @@ import { EntityName, Resolver } from '../../constants';
 function getQuery(params: { text: string; title: boolean; author: boolean }) {
   const { text, title, author } = params;
 
+  const regExp = new RegExp(escapeStringRegexp(text), 'i');
+
   if (title && author) {
     return {
-      $or: [{ title: new RegExp(escapeStringRegexp(text), 'i') }, { author: new RegExp(escapeStringRegexp(text), 'i') }]
+      $or: [{ title: regExp }, { author: regExp }]
     };
   } else if (!title && author) {
-    return { author: new RegExp(escapeStringRegexp(text), 'i') };
+    return { author: regExp };
   } else if (title && !author) {
-    return { title: new RegExp(escapeStringRegexp(text), 'gi') };
+    return { title: regExp };
   } else {
     return {};
   }

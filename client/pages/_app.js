@@ -1,11 +1,16 @@
 import React from 'react';
 import App from 'next/app';
 import Head from 'next/head';
+import { Provider } from 'react-redux';
 import { ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
+
 import theme from '../src/theme';
+import { createStore } from '../redux/createStore';
 
 export default class MyApp extends App {
+  store = createStore();
+
   componentDidMount() {
     // Remove the server-side injected CSS.
     const jssStyles = document.querySelector('#jss-server-side');
@@ -22,10 +27,12 @@ export default class MyApp extends App {
         <Head>
           <title>My page</title>
         </Head>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <Component {...pageProps} />
-        </ThemeProvider>
+        <Provider store={this.store}>
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <Component {...pageProps} />
+          </ThemeProvider>
+        </Provider>
       </React.Fragment>
     );
   }

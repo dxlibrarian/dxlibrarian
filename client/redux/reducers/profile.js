@@ -1,17 +1,17 @@
 import { LOGIN } from '../actionTypes';
 
 function atob(s) {
-  var e = {},
-    i,
+  let i,
     b = 0,
     c,
     x,
     l = 0,
     a,
-    r = '',
+    r = '';
+  const e = {},
     w = String.fromCharCode,
     L = s.length;
-  var A = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+  const A = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
   for (i = 0; i < 64; i++) {
     e[A.charAt(i)] = i;
   }
@@ -28,8 +28,9 @@ function atob(s) {
 
 function parseJwtToken(jwtToken) {
   try {
-    return JSON.parse(atob(decodeURIComponent(profile).split('.')[1]));
-  } catch (e) {
+    return JSON.parse(atob(decodeURIComponent(jwtToken).split('.')[1]));
+  } catch (error) {
+    console.warn(error);
     return {};
   }
 }
@@ -38,8 +39,7 @@ export const profile = (state = {}, action) => {
   switch (action.type) {
     case LOGIN: {
       const { jwtToken } = action.payload;
-      const profile = parseJwtToken(jwtToken);
-      return profile;
+      return parseJwtToken(jwtToken);
     }
     default: {
       return state;

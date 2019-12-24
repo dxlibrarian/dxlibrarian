@@ -10,7 +10,7 @@ export async function authHandler(req: Request<{ state?: string }, { redirectUrl
 
   log.debug('Auth strategy. Start');
 
-  const failureRedirect = '/error';
+  const failureRedirect = encodeURI(`${GITHUB_IO_ORIGIN}/error`);
 
   await new Promise(resolve => {
     Object.defineProperties(authStrategy, {
