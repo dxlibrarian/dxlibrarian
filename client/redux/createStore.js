@@ -13,7 +13,10 @@ export const createStore = () => {
   const store = createReduxStore(combineReducers(reducers), composeEnhancers(applyMiddleware(...middlewares)));
 
   if (IS_CLIENT) {
-    const { jwtToken } = parse(window.location.search) || Cookies.get('jwtToken');
+    let jwtToken
+    ;({ jwtToken } = parse(window.location.search))
+    if(jwtToken == null) { jwtToken = Cookies.get('jwtToken'); }
+
     if (jwtToken != null && jwtToken.constructor === String && jwtToken.length > 0) {
       store.dispatch(login(jwtToken));
     } else {
