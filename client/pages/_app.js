@@ -32,7 +32,7 @@ export default class MyApp extends App {
         <Provider store={this.store}>
           <ThemeProvider theme={theme}>
             <CssBaseline />
-            <TopMenu/>
+            <TopMenu />
             <Component {...pageProps} />
             <Copyright />
           </ThemeProvider>

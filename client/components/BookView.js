@@ -1,96 +1,99 @@
-import React from 'react'
+import React from 'react';
 import Paper from '@material-ui/core/Paper';
 
-const defaultImage = '/images/book_placeholder.jpg'
+const defaultImage = '/images/book_placeholder.jpg';
 
 export default class BookView extends React.PureComponent {
   // eslint-disable-next-line no-unused-vars
   state = {
     img: '/images/spinner.gif'
-  }
+  };
 
   componentDidMount() {
-    window.addEventListener('scroll', this.onScroll)
-    window.addEventListener('resize', this.onScroll)
-    this.onScroll()
+    window.addEventListener('scroll', this.onScroll);
+    window.addEventListener('resize', this.onScroll);
+    this.onScroll();
   }
 
   componentWillUnmount() {
-    window.removeEventListener('scroll', this.onScroll)
-    window.removeEventListener('resize', this.onScroll)
-    clearTimeout(this.timer)
+    window.removeEventListener('scroll', this.onScroll);
+    window.removeEventListener('resize', this.onScroll);
+    clearTimeout(this.timer);
   }
 
   onScroll = () => {
-    clearTimeout(this.timer)
-    this.timer = setTimeout(this.checkVisibleAndOptionalLoadImage, 100)
-  }
+    clearTimeout(this.timer);
+    this.timer = setTimeout(this.checkVisibleAndOptionalLoadImage, 100);
+  };
 
   checkVisibleAndOptionalLoadImage = () => {
     if (this.isVisible()) {
       this.setState({
         img: this.props.img
-      })
+      });
+    }
+  };
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.img !== prevState.img) {
+      this.onScroll();
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.props.img !== nextProps.img) {
-      this.setState(
-        {
-          img: nextProps.img
-        },
-        this.onScroll
-      )
+  static getDerivedStateFromProps(props, state) {
+    if (state.img !== props.img) {
+      return {
+        img: props.img
+      };
     }
+
+    // Return null to indicate no change to state.
+    return null;
   }
 
   isVisible = () => {
-    let book = this.refs.book
+    let book = this.book;
 
-    let top = book.offsetTop
-    let height = book.offsetHeight
-
-    while (book.offsetParent) {
-      book = book.offsetParent
-      top += book.offsetTop
+    if(book == null) {
+      return false
     }
 
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+    let top = book.offsetTop;
+    let height = book.offsetHeight;
 
-    return top < scrollTop + window.innerHeight && top + height > scrollTop
+    while (book.offsetParent) {
+      book = book.offsetParent;
+      top += book.offsetTop;
+    }
+
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+    return top < scrollTop + window.innerHeight && top + height > scrollTop;
+  };
+
+  refRoot = (domElement) => {
+    this.book = domElement
   }
 
   render() {
-    const {
-      title,
-      author,
-      total,
-      free,
-      displayMode,
-      children,
-      onImageClick
-    } = this.props
+    const { title, author, total, free, displayMode, children, onImageClick } = this.props;
 
-    const { img } = this.state
+    const { img } = this.state;
 
-    let imageSource = img || defaultImage
+    let imageSource = img || defaultImage;
 
     return (
       <span>
-        <Paper zDepth={2}>
-          <div className="root" ref="book">
+        <Paper elevation={3}>
+          <div className="root" ref={this.refRoot}>
             <div className={`card card--${displayMode}`}>
               <div className="container">
                 <div className="sub-container">
                   <div className="title-container">
-                    <div className={`title title--${displayMode}`}>
-                      {title}
-                    </div>
+                    <div className={`title title--${displayMode}`}>{title}</div>
                   </div>
                   <div className="image-container">
                     <div
-                      onTouchTap={onImageClick}
                       className="image-sub-container"
                       style={{
                         color: 'red',
@@ -100,17 +103,13 @@ export default class BookView extends React.PureComponent {
                     />
                   </div>
                   <div className="count-container">
-                    <div className={`count count--${displayMode}`}>
-                      {`TOTAL: ${total} / FREE: ${free}`}
-                    </div>
+                    <div className={`count count--${displayMode}`}>{`TOTAL: ${total} / FREE: ${free}`}</div>
                   </div>
-                  {author
-                    ? <div className="author-container">
-                      <div className={`author author--${displayMode}`}>
-                        {author}
-                      </div>
+                  {author ? (
+                    <div className="author-container">
+                      <div className={`author author--${displayMode}`}>{author}</div>
                     </div>
-                    : null}
+                  ) : null}
                   {children}
                 </div>
               </div>
@@ -195,6 +194,6 @@ export default class BookView extends React.PureComponent {
           }
         `}</style>
       </span>
-    )
+    );
   }
 }

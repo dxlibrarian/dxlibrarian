@@ -5,7 +5,6 @@ import Box from '@material-ui/core/Box';
 
 import Link from '../components/Link';
 
-
 export default function NewBook() {
   return (
     <Container maxWidth="sm">

@@ -6,9 +6,7 @@ const year = new Date().getFullYear();
 export default function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © Anton Zhukov'}
-      {' '}
-      {year}
+      {'Copyright © Anton Zhukov'} {year}
     </Typography>
   );
 }
