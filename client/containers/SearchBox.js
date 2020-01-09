@@ -12,7 +12,14 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 
 import { SearchBy, SortBy, Location, DisplayMode } from '../constants';
-import { updateSearchText } from '../redux/actions';
+import {
+  updateSearchText,
+  updateSearchBy,
+  updateSortBy,
+  updateSearchFilterBy,
+  updateSearchDisplayMode,
+  noop
+} from '../redux/actions';
 
 const searchByList = Object.keys(SearchBy).map(key => ({ key, value: SearchBy[key] }));
 
@@ -56,20 +63,40 @@ function getPlaceholder(searchBy) {
   }
 }
 
-function updateText({ target: { value } }) {
-  return updateSearchText(value);
-}
-
 export function useActions() {
   const dispatch = useDispatch();
   return useMemo(() => {
     return bindActionCreators(
       {
-        updateText
+        onChangeText({ target: { value } }) {
+          return updateSearchText(value);
+        },
+        onChangeSearchBy({ target: { value } }) {
+          if (value.length === 0) {
+            return noop();
+          }
+          return updateSearchBy(value);
+        },
+        onChangeSortBy({ target: { value } }) {
+          return updateSortBy(value);
+        },
+        onChangeDisplayMode({ target: { value } }) {
+          return updateSearchDisplayMode(value);
+        },
+        onChangeFilterBy({ target: { value } }) {
+          if (value.length === 0) {
+            return noop();
+          }
+          return updateSearchFilterBy(value);
+        }
       },
       dispatch
     );
   }, [dispatch]);
+}
+
+function renderSelectMultiple(selected) {
+  return selected.join(', ');
 }
 
 export default function SearchBox() {
@@ -77,7 +104,7 @@ export default function SearchBox() {
 
   const { text, searchBy, sortBy, filterBy, displayMode } = useSelector(searchSelector);
 
-  const { updateText } = useActions();
+  const { onChangeText, onChangeSearchBy, onChangeSortBy, onChangeDisplayMode, onChangeFilterBy } = useActions();
 
   const placeholder = getPlaceholder(searchBy);
 
@@ -89,7 +116,7 @@ export default function SearchBox() {
             placeholder={placeholder}
             inputProps={{ 'aria-label': 'search' }}
             value={text}
-            onChange={updateText}
+            onChange={onChangeText}
           />
         </FormControl>
         <IconButton aria-label="search">
@@ -99,7 +126,7 @@ export default function SearchBox() {
       <div className={classes.controls}>
         <FormControl className={classes.control}>
           <InputLabel>Search by</InputLabel>
-          <Select value={searchBy} onChange={() => {}} multiple renderValue={selected => selected.join(', ')}>
+          <Select value={searchBy} onChange={onChangeSearchBy} multiple renderValue={renderSelectMultiple}>
             {searchByList.map(({ key, value }) => (
               <MenuItem key={key} value={value}>
                 {value}
@@ -109,7 +136,7 @@ export default function SearchBox() {
         </FormControl>
         <FormControl className={classes.control}>
           <InputLabel>Sort by</InputLabel>
-          <Select value={sortBy} onChange={() => {}}>
+          <Select value={sortBy} onChange={onChangeSortBy}>
             {sortByList.map(({ key, value }) => (
               <MenuItem key={key} value={value}>
                 {value}
@@ -119,7 +146,7 @@ export default function SearchBox() {
         </FormControl>
         <FormControl className={classes.control}>
           <InputLabel>Display mode</InputLabel>
-          <Select value={displayMode} onChange={() => {}}>
+          <Select value={displayMode} onChange={onChangeDisplayMode}>
             {displayModeList.map(({ key, value }) => (
               <MenuItem key={key} value={value}>
                 {value}
@@ -129,7 +156,7 @@ export default function SearchBox() {
         </FormControl>
         <FormControl className={classes.control}>
           <InputLabel>Filter by</InputLabel>
-          <Select value={filterBy} onChange={() => {}} multiple renderValue={selected => selected.join(', ')}>
+          <Select value={filterBy} onChange={onChangeFilterBy} multiple renderValue={renderSelectMultiple}>
             {locationList.map(({ key, value }) => (
               <MenuItem key={key} value={value}>
                 {value}

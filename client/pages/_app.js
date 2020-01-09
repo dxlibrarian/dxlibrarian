@@ -25,7 +25,7 @@ export default class MyApp extends App {
     return (
       <React.Fragment>
         <Head>
-          <title>My page</title>
+          <title>DXLibrarian</title>
         </Head>
         <Provider store={this.store}>
           <ThemeProvider theme={theme}>
