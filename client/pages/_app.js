@@ -5,8 +5,6 @@ import { Provider } from 'react-redux';
 import { ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 
-import TopMenu from '../components/TopMenu';
-import Copyright from '../components/Copyright';
 import theme from '../theme';
 import { createStore } from '../redux/createStore';
 
@@ -32,9 +30,7 @@ export default class MyApp extends App {
         <Provider store={this.store}>
           <ThemeProvider theme={theme}>
             <CssBaseline />
-            <TopMenu />
             <Component {...pageProps} />
-            <Copyright />
           </ThemeProvider>
         </Provider>
       </React.Fragment>

@@ -94,6 +94,12 @@ export enum Location {
   SPB = 'Saint Petersburg'
 }
 
+export enum SortBy {
+  TULA = 'Tula',
+  KALUGA = 'Kaluga',
+  SPB = 'Saint Petersburg'
+}
+
 export enum Resolver {
   GET_ALL_USERS = 'getAllUsers',
   GET_USER = 'getUser',

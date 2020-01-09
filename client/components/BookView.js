@@ -1,7 +1,42 @@
 import React from 'react';
+import * as PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
+import Favorite from '@material-ui/icons/Favorite';
+import { makeStyles } from '@material-ui/core/styles';
 
-const defaultImage = '/images/book_placeholder.jpg';
+import Link from '../components/Link';
+
+const defaultImage = '/images/book-placeholder.jpg';
+
+const useStyles = makeStyles(() => ({
+  image: {
+    color: 'inherit',
+    textDecoration: 'none',
+    display: 'table-cell',
+    height: '100%',
+    backgroundPositionX: '50%',
+    backgroundPositionY: '50%',
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: 'contain',
+    cursor: 'pointer'
+  }
+}));
+
+function BookImage({ url, src }) {
+  const classes = useStyles();
+
+  return (
+    <Link
+      href={url}
+      naked
+      className={classes.image}
+      style={{
+        backgroundImage: `url("${src}")`
+      }}
+    />
+  );
+}
 
 export default class BookView extends React.PureComponent {
   // eslint-disable-next-line no-unused-vars
@@ -54,8 +89,8 @@ export default class BookView extends React.PureComponent {
   isVisible = () => {
     let book = this.book;
 
-    if(book == null) {
-      return false
+    if (book == null) {
+      return false;
     }
 
     let top = book.offsetTop;
@@ -71,20 +106,39 @@ export default class BookView extends React.PureComponent {
     return top < scrollTop + window.innerHeight && top + height > scrollTop;
   };
 
-  refRoot = (domElement) => {
-    this.book = domElement
-  }
+  refRoot = domElement => {
+    this.book = domElement;
+  };
+
+  static defaultProps = {
+    isLiked: false,
+    isActive: false,
+    isTracked: false,
+    likesCount: 0
+  };
+
+  static propTypes = {
+    url: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    author: PropTypes.string,
+    total: PropTypes.number.isRequired,
+    free: PropTypes.number.isRequired,
+    displayMode: PropTypes.oneOf(['standard', 'compact', 'minimal']).isRequired,
+    isLiked: PropTypes.bool,
+    isActive: PropTypes.bool,
+    isTracked: PropTypes.bool,
+    likesCount: PropTypes.number
+  };
 
   render() {
-    const { title, author, total, free, displayMode, children, onImageClick } = this.props;
-
+    const { url, title, author, total, free, displayMode, isLiked, isActive, isTracked, likesCount } = this.props;
     const { img } = this.state;
 
-    let imageSource = img || defaultImage;
+    const imageSource = img == null ? defaultImage : img;
 
     return (
       <span>
-        <Paper elevation={3}>
+        <Paper elevation={4}>
           <div className="root" ref={this.refRoot}>
             <div className={`card card--${displayMode}`}>
               <div className="container">
@@ -93,24 +147,44 @@ export default class BookView extends React.PureComponent {
                     <div className={`title title--${displayMode}`}>{title}</div>
                   </div>
                   <div className="image-container">
-                    <div
-                      className="image-sub-container"
-                      style={{
-                        color: 'red',
-                        backgroundImage: `url("${imageSource}")`,
-                        cursor: onImageClick ? 'pointer' : undefined
-                      }}
-                    />
+                    <BookImage url={url} src={imageSource} />
                   </div>
                   <div className="count-container">
                     <div className={`count count--${displayMode}`}>{`TOTAL: ${total} / FREE: ${free}`}</div>
                   </div>
-                  {author ? (
+                  {author != null ? (
                     <div className="author-container">
                       <div className={`author author--${displayMode}`}>{author}</div>
                     </div>
                   ) : null}
-                  {children}
+                  <div className="controls-container">
+                    <div className="controls">
+                      {isActive ? (
+                        <Button>Return</Button>
+                      ) : free ? (
+                        <Button>Take</Button>
+                      ) : (
+                        <Button disabled={true}>Take</Button>
+                      )}
+                      <Button>
+                        <Favorite
+                          color="primary"
+                          style={{
+                            opacity: isLiked ? 0.66 : 0.25,
+                            marginRight: likesCount > 0 ? '5px' : undefined
+                          }}
+                        />
+                        {likesCount > 0 ? likesCount : ''}
+                      </Button>
+                      {isActive ? (
+                        <Button disabled={true}>Track</Button>
+                      ) : isTracked ? (
+                        <Button>Untrack</Button>
+                      ) : (
+                        <Button>Track</Button>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -159,14 +233,6 @@ export default class BookView extends React.PureComponent {
           .image-container {
             display: table-row;
           }
-          .image-sub-container {
-            display: table-cell;
-            height: 100%;
-            background-position-x: 50%;
-            background-position-y: 50%;
-            background-repeat: no-repeat;
-            background-size: contain;
-          }
           .author-container {
             display: table-row;
           }
@@ -191,6 +257,14 @@ export default class BookView extends React.PureComponent {
           }
           .count--minimal {
             font-size: 9px;
+          }
+          .controls-container {
+            display: table-row;
+          }
+          .controls {
+            display: table-cell;
+            text-align: center;
+            padding: 10px 0;
           }
         `}</style>
       </span>
