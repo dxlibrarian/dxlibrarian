@@ -2,14 +2,21 @@ import { Request, Response } from '../constants';
 import { wrapRequest } from '../utils/wrapRequest';
 import { wrapResponse } from '../utils/wrapResponse';
 import { checkPath } from '../utils/checkPath';
+import { getLog } from '../utils/getLog';
 import { authHandler } from './authHandler';
 import { publishHandler } from './publishHandler';
 import { readHandler } from './readHandler';
 import { notFoundHandler } from './notFoundHandler';
 
 export async function mainHandler(originalReq: Request<any, any>, originalRes: Response) {
+  const log = getLog('dxlibrarian:mainHandler');
+
   const req = wrapRequest(originalReq);
   const res = wrapResponse(originalRes);
+
+  log.verbose('path:', req.path);
+  log.verbose('body:', req.body);
+  log.verbose('query:', req.query);
 
   try {
     switch (true) {

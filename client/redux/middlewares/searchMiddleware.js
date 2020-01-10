@@ -38,9 +38,8 @@ export const searchMiddleware = store => {
           filterBy: action.payload.filterBy
         });
 
-        const response = await fetch({
-          method: 'GET',
-          url: `${API_GATEWAY_URL}/api/read?${query}`
+        const response = await fetch(`${API_GATEWAY_URL}/api/read?${query}`, {
+          method: 'GET'
         });
 
         const books = await response.json();
