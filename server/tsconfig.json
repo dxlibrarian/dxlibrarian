@@ -27,6 +27,7 @@
       "react",
       "jsonwebtoken",
       "mongodb",
+      "query-string",
       "./external"
     ]
   }

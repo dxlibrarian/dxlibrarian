@@ -21,7 +21,8 @@
     "prop-types": "15.7.2",
     "query-string": "5.1.1",
     "js-cookie": "2.2.1",
-    "react-sizeme": "2.6.10"
+    "react-sizeme": "2.6.10",
+    "tcomb-validation":"3.4.1"
   },
   "devDependencies": {
     "serve": "11.3.0"

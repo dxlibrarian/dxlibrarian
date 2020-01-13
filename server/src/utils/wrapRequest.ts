@@ -60,7 +60,16 @@ export function wrapRequest(req: Request<any, any>): Request<any, any> {
     }
   }
 
+  let jwtToken;
+  if (req.headers && req.headers.authorization) {
+    jwtToken = req.headers.authorization.replace(/^Bearer /i, '');
+  }
+
   return Object.create(req, {
+    jwtToken: {
+      value: jwtToken,
+      enumerable: true
+    },
     body: {
       value: bodyContent,
       enumerable: true

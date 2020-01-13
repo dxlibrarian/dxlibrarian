@@ -94,10 +94,18 @@ export enum Location {
   SPB = 'Saint Petersburg'
 }
 
+export enum SearchBy {
+  TITLE = 'Title',
+  AUTHOR = 'Author'
+}
+
 export enum SortBy {
-  TULA = 'Tula',
-  KALUGA = 'Kaluga',
-  SPB = 'Saint Petersburg'
+  TITLE_ASC = 'Title (A -> Z)',
+  TITLE_DESC = 'Title (Z -> A)',
+  AUTHOR_ASC = 'Author (A -> Z)',
+  AUTHOR_DESC = 'Author (Z -> A)',
+  LIKES_ASC = 'Likes (0 -> +\u221E)',
+  LIKES_DESC = 'Likes (+\u221E -> 0)'
 }
 
 export enum Resolver {
