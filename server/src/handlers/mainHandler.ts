@@ -22,6 +22,15 @@ export async function mainHandler(originalReq: Request<any, any>, originalRes: R
   log.verbose('jwtToken:', req.jwtToken);
 
   try {
+    if (req.method === 'OPTIONS') {
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Access-Control-Allow-Methods', 'POST,GET,OPTIONS');
+      res.setHeader('Access-Control-Allow-Headers', 'authorization,x-jwt');
+      res.setHeader('Access-Control-Max-Age', '86400');
+      res.status(200);
+      res.end();
+    }
+
     switch (true) {
       case checkPath(req, '/auth/callback', ['GET', 'POST']): {
         return await authHandler(req, res);

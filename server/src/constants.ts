@@ -149,7 +149,7 @@ export type GatewayEvent = {
   path: string;
   httpMethod: HTTPMethod;
   headers: { [key: string]: any };
-  queryStringParameters?: { [key: string]: any };
+  multiValueQueryStringParameters?: { [key: string]: any };
   body: string;
   type: void;
 };

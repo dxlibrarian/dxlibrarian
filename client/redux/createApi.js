@@ -8,19 +8,25 @@ import { API_GATEWAY_URL, SearchBy, SortBy, Location } from '../constants';
 
 export function createApi() {
   function getHeaders() {
-    const headers = new Headers();
-    headers.append('Authorization', `Bearer ${Cookies.get('jwtToken')}`);
-    headers.append('Accept', 'application/json');
-    return headers;
+    // const headers = new Headers();
+    // headers.append('Authorization', `Bearer ${Cookies.get('jwtToken')}`);
+    // headers.append('Accept', 'application/json');
+    // return headers;
+
+    return {
+      'X-JWT': `Bearer ${Cookies.get('jwtToken')}`,
+      Authorization: `Bearer ${Cookies.get('jwtToken')}`,
+      Accept: 'application/json'
+    };
   }
 
   async function get(url, data) {
-    const query = Object.keys(data).length === 0 ? '' : `?${queryString.stringify(data)}`;
+    const query = Object.keys(data).length === 0 ? '' : `?${queryString.stringify(data, { arrayFormat: 'bracket' })}`;
 
     const response = await fetch(`${API_GATEWAY_URL}${url}${query}`, {
       method: 'GET',
       headers: getHeaders(),
-      mode: 'cors',
+      withCredentials: true,
       credentials: 'include'
     });
 
@@ -32,7 +38,7 @@ export function createApi() {
       method: 'POST',
       body: JSON.stringify(data),
       headers: getHeaders(),
-      mode: 'cors',
+      withCredentials: true,
       credentials: 'include'
     });
 

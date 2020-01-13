@@ -55,6 +55,8 @@ function wrapHeadersCaseInsensitive(headersMap: { [key: string]: any }) {
   );
 }
 
+const isTrailingBracket = /\[\]$/;
+
 async function createRequest(
   lambdaEvent: GatewayEvent,
   customParameters?: { [key: string]: any }
@@ -64,7 +66,7 @@ async function createRequest(
     path,
     httpMethod,
     headers: { 'x-proxy-headers': proxyHeadersString, ...originalHeaders },
-    queryStringParameters,
+    multiValueQueryStringParameters,
     body
   } = lambdaEvent;
   /* eslint-enable prefer-const */
@@ -91,7 +93,15 @@ async function createRequest(
 
   const req: Request<string, any> = Object.create(null);
 
-  const query = queryStringParameters != null ? queryStringParameters : {};
+  const query = multiValueQueryStringParameters != null ? multiValueQueryStringParameters : {};
+  for (const [queryKey, queryValue] of Object.entries<Array<string>>(multiValueQueryStringParameters)) {
+    if (isTrailingBracket.test(queryKey)) {
+      delete query[queryKey];
+      query[queryKey.replace(isTrailingBracket, '')] = queryValue;
+    } else if (queryValue.length === 1) {
+      query[queryKey] = queryValue[0];
+    }
+  }
 
   const reqProperties: Request<string, any> = {
     method: httpMethod,
