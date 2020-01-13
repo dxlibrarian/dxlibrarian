@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import { ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 
-import theme from '../src/theme';
+import theme from '../theme';
 import { createStore } from '../redux/createStore';
 
 export default class MyApp extends App {
@@ -25,7 +25,7 @@ export default class MyApp extends App {
     return (
       <React.Fragment>
         <Head>
-          <title>My page</title>
+          <title>DXLibrarian</title>
         </Head>
         <Provider store={this.store}>
           <ThemeProvider theme={theme}>

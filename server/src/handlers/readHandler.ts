@@ -9,6 +9,6 @@ export async function readHandler(
   >,
   res: Response
 ): Promise<void> {
-  const { jwtToken } = req.query;
-  res.end('ok');
+  const { jwtToken } = req;
+  res.json([]);
 }

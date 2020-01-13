@@ -214,6 +214,7 @@ function createResponse(): Response {
     validateResponseOpened();
     validateOptionShape('Text', content, [String]);
     validateOptionShape('Encoding', encoding, [String], true);
+    internalRes.headers[normalizeKey('Content-Type', 'upper-dash-case')] = 'text/plain';
     internalRes.body = Buffer.from(content, encoding);
     internalRes.closed = true;
     return res;
@@ -231,8 +232,8 @@ function createResponse(): Response {
     validateResponseOpened();
     validateOptionShape('Content', content, [String, Buffer]);
     validateOptionShape('Encoding', encoding, [String], true);
+    internalRes.headers[normalizeKey('Content-Type', 'upper-dash-case')] = 'text/plain';
     internalRes.body = content.constructor === String ? Buffer.from(content as string, encoding) : content;
-
     internalRes.closed = true;
     return res;
   });

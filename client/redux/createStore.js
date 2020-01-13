@@ -5,15 +5,26 @@ import { createStore as createReduxStore, combineReducers, applyMiddleware, comp
 import { middlewares } from './middlewares';
 import { reducers } from './reducers';
 import { login, authorize } from './actions';
+import { createApi } from './createApi';
 import { IS_CLIENT } from '../constants';
 
 const composeEnhancers = (IS_CLIENT && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose;
 
 export const createStore = () => {
-  const store = createReduxStore(combineReducers(reducers), composeEnhancers(applyMiddleware(...middlewares)));
+  const api = createApi();
+
+  const store = createReduxStore(
+    combineReducers(reducers),
+    composeEnhancers(applyMiddleware(...middlewares.map(createMiddleware => createMiddleware(api))))
+  );
 
   if (IS_CLIENT) {
-    const { jwtToken } = parse(window.location.search) || Cookies.get('jwtToken');
+    let jwtToken;
+    ({ jwtToken } = parse(window.location.search));
+    if (jwtToken == null) {
+      jwtToken = Cookies.get('jwtToken');
+    }
+
     if (jwtToken != null && jwtToken.constructor === String && jwtToken.length > 0) {
       store.dispatch(login(jwtToken));
     } else {

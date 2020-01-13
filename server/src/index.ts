@@ -7,20 +7,28 @@ import { dropProjectionsAndEventStore } from './executors/dropProjectionsAndEven
 import { buildProjections } from './executors/buildProjections';
 import { createBook } from './executors/createBook';
 import { read } from './executors/read';
+import { getLog } from './utils/getLog';
 
 function getCustomParameters<T>(customParameters: T) {
   return customParameters;
 }
 
 export default (event: any, context: LambdaContext) => {
+  const log = getLog('dxlibrarian:index');
+
   const gatewayEvent = event as GatewayEvent;
   if (gatewayEvent.headers != null && gatewayEvent.httpMethod != null) {
+    log.debug('API handler');
+    log.verbose('event.queryStringParameters:', event.queryStringParameters);
+    log.verbose('event.multiValueQueryStringParameters:', event.multiValueQueryStringParameters);
+
     const executor = wrapApiHandler(mainHandler, getCustomParameters.bind(null, {}));
 
     return executor(gatewayEvent, context);
   }
 
   const lambdaEvent = event as LambdaEvent;
+  log.debug(`Executor. Type = ${lambdaEvent.type}`);
   switch (lambdaEvent.type) {
     case LambdaEventType.IMPORT_USERS: {
       return importUsers();
