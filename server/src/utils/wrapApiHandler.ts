@@ -94,7 +94,7 @@ async function createRequest(
   const req: Request<string, any> = Object.create(null);
 
   const query = multiValueQueryStringParameters != null ? multiValueQueryStringParameters : {};
-  for (const [queryKey, queryValue] of Object.entries<Array<string>>(multiValueQueryStringParameters)) {
+  for (const [queryKey, queryValue] of Object.entries<Array<string>>(query)) {
     if (isTrailingBracket.test(queryKey)) {
       delete query[queryKey];
       query[queryKey.replace(isTrailingBracket, '')] = queryValue;

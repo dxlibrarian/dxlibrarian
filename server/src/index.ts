@@ -16,6 +16,8 @@ function getCustomParameters<T>(customParameters: T) {
 export default (event: any, context: LambdaContext) => {
   const log = getLog('dxlibrarian:index');
 
+  log.verbose(event);
+
   const gatewayEvent = event as GatewayEvent;
   if (gatewayEvent.headers != null && gatewayEvent.httpMethod != null) {
     log.debug('API handler');
