@@ -8,13 +8,7 @@ import { API_GATEWAY_URL, SearchBy, SortBy, Location } from '../constants';
 
 export function createApi() {
   function getHeaders() {
-    // const headers = new Headers();
-    // headers.append('Authorization', `Bearer ${Cookies.get('jwtToken')}`);
-    // headers.append('Accept', 'application/json');
-    // return headers;
-
     return {
-      'X-JWT': `Bearer ${Cookies.get('jwtToken')}`,
       Authorization: `Bearer ${Cookies.get('jwtToken')}`,
       Accept: 'application/json'
     };
@@ -25,9 +19,7 @@ export function createApi() {
 
     const response = await fetch(`${API_GATEWAY_URL}${url}${query}`, {
       method: 'GET',
-      headers: getHeaders(),
-      withCredentials: true,
-      credentials: 'include'
+      headers: getHeaders()
     });
 
     return response.json();
@@ -37,9 +29,7 @@ export function createApi() {
     const response = await fetch(`${API_GATEWAY_URL}${url}`, {
       method: 'POST',
       body: JSON.stringify(data),
-      headers: getHeaders(),
-      withCredentials: true,
-      credentials: 'include'
+      headers: getHeaders()
     });
 
     return response.json();

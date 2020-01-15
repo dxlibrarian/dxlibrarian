@@ -25,10 +25,11 @@ export async function mainHandler(originalReq: Request<any, any>, originalRes: R
     if (req.method === 'OPTIONS') {
       res.setHeader('Access-Control-Allow-Origin', '*');
       res.setHeader('Access-Control-Allow-Methods', 'POST,GET,OPTIONS');
-      res.setHeader('Access-Control-Allow-Headers', 'authorization,x-jwt');
+      res.setHeader('Access-Control-Allow-Headers', 'authorization');
       res.setHeader('Access-Control-Max-Age', '86400');
       res.status(200);
       res.end();
+      return;
     }
 
     switch (true) {
