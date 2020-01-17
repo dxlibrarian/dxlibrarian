@@ -1,14 +1,7 @@
-import {
-  SEARCH_BOOKS_REQUEST,
-  SEARCH_BOOKS_SUCCESS,
-  SEARCH_BOOKS_FAILURE,
-  UPDATE_SEARCH_TEXT,
-  UPDATE_SEARCH_FILTER_BY,
-  UPDATE_SEARCH_BY
-} from '../actionTypes';
+import { SEARCH_BOOKS_REQUEST, UPDATE_SEARCH_TEXT, UPDATE_SEARCH_FILTER_BY, UPDATE_SEARCH_BY } from '../actionTypes';
 import { searchBooksRequest, searchBooksSuccess, searchBooksCancel } from '../actions';
 
-const LIVE_SEARCH_INTERVAL = 1000;
+const LIVE_SEARCH_INTERVAL = 667;
 
 export const searchMiddleware = api => store => {
   let timer = null;
@@ -43,6 +36,7 @@ export const searchMiddleware = api => store => {
             filterBy
           });
         } catch (error) {
+          await api.showError(error);
           store.dispatch(searchBooksCancel(text, searchBy, filterBy, requestId));
           break;
         }

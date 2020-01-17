@@ -1,6 +1,7 @@
 import Cookies from 'js-cookie';
 import queryString from 'query-string';
 import tcomb from 'tcomb-validation';
+import { toast } from 'react-toastify';
 
 import { validate } from '../validate';
 
@@ -48,6 +49,13 @@ export function createApi() {
   }
 
   return {
+    showError(error) {
+      toast(error.message, {
+        type: toast.TYPE.ERROR,
+        autoClose: 5000,
+        draggable: false
+      });
+    },
     searchBooks({ text, searchBy, filterBy }) {
       validate(
         {

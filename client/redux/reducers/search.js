@@ -55,7 +55,7 @@ export const search = (state = initialState, action) => {
     case UPDATE_SEARCH_SORT_BY: {
       return {
         ...state,
-        books: state.items.sort(sortFunctions[action.payload.sortBy]),
+        books: state.books.sort(sortFunctions[action.payload.sortBy]),
         sortBy: action.payload.sortBy
       };
     }
