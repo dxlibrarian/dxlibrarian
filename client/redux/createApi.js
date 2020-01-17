@@ -4,7 +4,7 @@ import tcomb from 'tcomb-validation';
 
 import { validate } from '../validate';
 
-import { API_GATEWAY_URL, SearchBy, SortBy, Location } from '../constants';
+import { API_GATEWAY_URL, SearchBy, Location } from '../constants';
 
 export function createApi() {
   function getHeaders() {
@@ -14,6 +14,14 @@ export function createApi() {
     };
   }
 
+  async function maybeThrowError(response) {
+    if (response.status >= 400 && response.status <= 599) {
+      const error = new Error('Fetch error');
+      error.stack = await response.text();
+      throw error;
+    }
+  }
+
   async function get(url, data) {
     const query = Object.keys(data).length === 0 ? '' : `?${queryString.stringify(data, { arrayFormat: 'bracket' })}`;
 
@@ -21,6 +29,8 @@ export function createApi() {
       method: 'GET',
       headers: getHeaders()
     });
+
+    await maybeThrowError(response);
 
     return response.json();
   }
@@ -32,37 +42,30 @@ export function createApi() {
       headers: getHeaders()
     });
 
+    await maybeThrowError(response);
+
     return response.json();
   }
 
   return {
-    searchBooks({ text, searchBy, sortBy, filterBy }) {
+    searchBooks({ text, searchBy, filterBy }) {
       validate(
         {
           text,
           searchBy,
-          sortBy,
           filterBy
         },
         tcomb.struct({
           text: tcomb.String,
           searchBy: tcomb.list(tcomb.enums.of([SearchBy.AUTHOR, SearchBy.TITLE])),
-          sortBy: tcomb.enums.of([
-            SortBy.TITLE_ASC,
-            SortBy.TITLE_DESC,
-            SortBy.AUTHOR_ASC,
-            SortBy.AUTHOR_DESC,
-            SortBy.LIKES_ASC,
-            SortBy.LIKES_DESC
-          ]),
           filterBy: tcomb.list(tcomb.enums.of([Location.TULA, Location.KALUGA, Location.SPB]))
         })
       );
 
-      return get('/api/books', {
+      return get('/api/read', {
+        resolverName: 'searchBooks',
         text,
         searchBy,
-        sortBy,
         filterBy
       });
     }

@@ -9,7 +9,7 @@ export async function read(params: { resolverName: string; resolverArgs: { [key:
   const { read, close } = createDomain();
 
   try {
-    log.debug('Read has been started');
+    log.debug('Executor "read" has been started');
 
     log.debug('Operation "read" has been started');
     const result = await read(resolverName, resolverArgs);
@@ -17,7 +17,7 @@ export async function read(params: { resolverName: string; resolverArgs: { [key:
 
     return result;
   } catch (error) {
-    log.debug('Read has been failed');
+    log.debug('Executor "read" has been failed');
     throw error;
   } finally {
     log.debug('Operation "close" has been started');

@@ -7,11 +7,11 @@ export async function buildProjections() {
   const { build, close } = createDomain();
 
   try {
-    log.debug('Build projections has been started');
+    log.debug('Executor "buildProjections" has been started');
     await build();
-    log.debug('Build projections has been finished');
+    log.debug('Executor "buildProjections" has been finished');
   } catch (error) {
-    log.debug('Build projections has been failed');
+    log.debug('Executor "buildProjections" has been failed');
     throw error;
   } finally {
     log.debug('Operation "close" has been started');

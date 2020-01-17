@@ -30,35 +30,32 @@ export const authorize = () => ({
   payload: {}
 });
 
-export const searchBooksRequest = (text, searchBy, sortBy, filterBy, requestId) => ({
+export const searchBooksRequest = (text, searchBy, filterBy, requestId) => ({
   type: SEARCH_BOOKS_REQUEST,
   payload: {
     text,
     searchBy,
-    sortBy,
     filterBy,
     requestId
   }
 });
 
-export const searchBooksSuccess = (text, searchBy, sortBy, filterBy, requestId, books) => ({
+export const searchBooksSuccess = (text, searchBy, filterBy, requestId, books) => ({
   type: SEARCH_BOOKS_SUCCESS,
   payload: {
     text,
     searchBy,
-    sortBy,
     filterBy,
     requestId,
     books
   }
 });
 
-export const searchBooksFailure = (text, searchBy, sortBy, filterBy, requestId, error) => ({
+export const searchBooksFailure = (text, searchBy, filterBy, requestId, error) => ({
   type: SEARCH_BOOKS_FAILURE,
   payload: {
     text,
     searchBy,
-    sortBy,
     filterBy,
     requestId
   },
@@ -70,7 +67,6 @@ export const searchBooksCancel = (text, searchBy, sortBy, filterBy, requestId) =
   payload: {
     text,
     searchBy,
-    sortBy,
     filterBy,
     requestId
   }

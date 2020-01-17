@@ -7,7 +7,8 @@ import BookView from '../components/BookView';
 
 function booksSelector(state) {
   return {
-    books: state.books,
+    userId: state.profile.userId,
+    books: state.search.books,
     displayMode: state.search.displayMode.toLowerCase()
   };
 }
@@ -15,22 +16,28 @@ function booksSelector(state) {
 function BooksContainer(props) {
   const { size } = props;
 
-  const { books, displayMode } = useSelector(booksSelector);
+  const { books, displayMode, userId } = useSelector(booksSelector);
 
   const countCardsInRow = Math.floor(size.width / 300) || 1;
 
-  const children = books.map(({ id, title, author, total, free, img }, index) => (
-    <BookView
-      key={index}
-      url={`/book?id=${id}`}
-      title={title}
-      author={author}
-      total={total}
-      free={free}
-      displayMode={displayMode}
-      img={img}
-    />
-  ));
+  const children = books.map(
+    ({ bookId, title, author, count, free, img, likesCount, likes, activeUsers, trackers }, index) => (
+      <BookView
+        key={index}
+        userId={userId}
+        url={`/book?id=${bookId}`}
+        title={title}
+        author={author}
+        count={count}
+        displayMode={displayMode}
+        img={img}
+        likes={likes}
+        likesCount={likesCount}
+        activeUsers={activeUsers}
+        trackers={trackers}
+      />
+    )
+  );
 
   const countFakeItems = countCardsInRow - (children.length % countCardsInRow);
   for (let fakeIndex = 0; fakeIndex < countFakeItems; fakeIndex++) {

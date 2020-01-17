@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { bindActionCreators } from 'redux';
 import { useSelector, useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
@@ -46,7 +46,8 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function searchSelector(state) {
-  return state.search;
+  const { text, searchBy, sortBy, filterBy, displayMode } = state.search;
+  return { text, searchBy, sortBy, filterBy, displayMode };
 }
 
 function getPlaceholder(searchBy) {
@@ -105,6 +106,16 @@ export default function SearchBox() {
   const { text, searchBy, sortBy, filterBy, displayMode } = useSelector(searchSelector);
 
   const { onChangeText, onChangeSearchBy, onChangeSortBy, onChangeDisplayMode, onChangeFilterBy } = useActions();
+
+  const [isMounted, updateMountStatus] = useState(null);
+
+  useEffect(() => {
+    if (!isMounted) {
+      console.log('searchbox mounted');
+      updateMountStatus(true);
+      onChangeText({ target: { value: text } });
+    }
+  });
 
   const placeholder = getPlaceholder(searchBy);
 

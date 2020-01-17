@@ -4,10 +4,21 @@ import {
   UPDATE_SEARCH_BY,
   UPDATE_SEARCH_SORT_BY,
   UPDATE_SEARCH_FILTER_BY,
-  UPDATE_SEARCH_DISPLAY_MODE
+  UPDATE_SEARCH_DISPLAY_MODE,
+  SEARCH_BOOKS_SUCCESS
 } from '../actionTypes';
 
+const sortFunctions = {
+  [SortBy.TITLE_ASC]: (a, b) => (a.title > b.title ? 1 : a.title < b.title ? -1 : 0),
+  [SortBy.TITLE_DESC]: (a, b) => (a.title > b.title ? -1 : a.title < b.title ? 1 : 0),
+  [SortBy.AUTHOR_ASC]: (a, b) => (a.author > b.author ? 1 : a.author < b.author ? -1 : 0),
+  [SortBy.AUTHOR_DESC]: (a, b) => (a.author > b.author ? -1 : a.author < b.author ? 1 : 0),
+  [SortBy.LIKES_ASC]: (a, b) => (a.likesCount > b.likesCount ? 1 : a.likesCount < b.likesCount ? -1 : 0),
+  [SortBy.LIKES_DESC]: (a, b) => (a.likesCount > b.likesCount ? -1 : a.likesCount < b.likesCount ? 1 : 0)
+};
+
 const initialState = {
+  books: [],
   text: '',
   searchBy: [SearchBy.TITLE, SearchBy.AUTHOR],
   sortBy: SortBy.TITLE_ASC,
@@ -29,12 +40,6 @@ export const search = (state = initialState, action) => {
         searchBy: action.payload.searchBy
       };
     }
-    case UPDATE_SEARCH_SORT_BY: {
-      return {
-        ...state,
-        sortBy: action.payload.sortBy
-      };
-    }
     case UPDATE_SEARCH_FILTER_BY: {
       return {
         ...state,
@@ -45,6 +50,21 @@ export const search = (state = initialState, action) => {
       return {
         ...state,
         displayMode: action.payload.displayMode
+      };
+    }
+    case UPDATE_SEARCH_SORT_BY: {
+      return {
+        ...state,
+        books: state.items.sort(sortFunctions[action.payload.sortBy]),
+        sortBy: action.payload.sortBy
+      };
+    }
+    case SEARCH_BOOKS_SUCCESS: {
+      return {
+        ...state,
+        books: action.payload.books
+          .map(book => ({ ...book, likesCount: book.likes.length }))
+          .sort(sortFunctions[state.sortBy])
       };
     }
     default: {

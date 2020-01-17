@@ -8,6 +8,12 @@ import { publishHandler } from './publishHandler';
 import { readHandler } from './readHandler';
 import { notFoundHandler } from './notFoundHandler';
 
+function cors(res: Response) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT');
+  res.setHeader('Access-Control-Allow-Headers', 'Authorization');
+}
+
 export async function mainHandler(originalReq: Request<any, any>, originalRes: Response) {
   const log = getLog('dxlibrarian:mainHandler');
 
@@ -19,18 +25,14 @@ export async function mainHandler(originalReq: Request<any, any>, originalRes: R
   log.verbose('body:', req.body);
   log.verbose('query:', req.query);
   log.verbose('headers:', req.headers);
-  log.verbose('jwtToken:', req.jwtToken);
 
   try {
-    if (req.method === 'OPTIONS') {
-      res.setHeader('Access-Control-Allow-Origin', '*');
-      res.setHeader('Access-Control-Allow-Methods', 'POST,GET,OPTIONS');
-      res.setHeader('Access-Control-Allow-Headers', 'authorization');
-      res.setHeader('Access-Control-Max-Age', '86400');
-      res.status(200);
-      res.end();
-      return;
-    }
+    // if (req.method === 'OPTIONS') {
+    //   cors(res);
+    //   res.status(200);
+    //   res.end();
+    //   return;
+    // }
 
     switch (true) {
       case checkPath(req, '/auth/callback', ['GET', 'POST']): {
@@ -40,9 +42,11 @@ export async function mainHandler(originalReq: Request<any, any>, originalRes: R
         return await authHandler(req, res);
       }
       case checkPath(req, '/api/publish', ['POST']): {
+        cors(res);
         return await publishHandler(req, res);
       }
       case checkPath(req, '/api/read', ['GET']): {
+        cors(res);
         return await readHandler(req, res);
       }
       default: {

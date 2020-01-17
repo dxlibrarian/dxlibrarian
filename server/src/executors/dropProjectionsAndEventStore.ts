@@ -7,11 +7,11 @@ export async function dropProjectionsAndEventStore() {
   const { drop, close } = createDomain();
 
   try {
-    log.debug('Drop projections and event store has been started');
+    log.debug('Executor "dropProjectionsAndEventStore" has been started');
     await drop({ eventStore: true });
-    log.debug('Drop projections and event store has been finished');
+    log.debug('Executor "dropProjectionsAndEventStore" has been finished');
   } catch (error) {
-    log.debug('Drop projections and event store has been failed');
+    log.debug('Executor "dropProjectionsAndEventStore" has been failed');
     throw error;
   } finally {
     log.debug('Operation "close" has been started');

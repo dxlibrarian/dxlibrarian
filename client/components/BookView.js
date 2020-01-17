@@ -121,18 +121,24 @@ export default class BookView extends React.PureComponent {
     url: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
     author: PropTypes.string,
-    total: PropTypes.number.isRequired,
-    free: PropTypes.number.isRequired,
+    count: PropTypes.number.isRequired,
     displayMode: PropTypes.oneOf(['standard', 'compact', 'minimal']).isRequired,
-    isLiked: PropTypes.bool,
-    isActive: PropTypes.bool,
-    isTracked: PropTypes.bool,
-    likesCount: PropTypes.number
+    likesCount: PropTypes.number.isRequired,
+    likes: PropTypes.arrayOf(PropTypes.string).isRequired,
+    activeUsers: PropTypes.arrayOf(PropTypes.string).isRequired,
+    trackers: PropTypes.arrayOf(PropTypes.string).isRequired,
+    userId: PropTypes.string.isRequired
   };
 
   render() {
-    const { url, title, author, total, free, displayMode, isLiked, isActive, isTracked, likesCount } = this.props;
+    const { url, title, author, count, displayMode, likesCount, likes, activeUsers, trackers, userId } = this.props;
     const { img } = this.state;
+
+    const isActive = activeUsers.indexOf(userId) !== -1;
+    const isTracked = trackers.indexOf(userId) !== -1;
+    const isLiked = likes.indexOf(userId) !== -1;
+
+    const free = count - activeUsers.length;
 
     const imageSource = img == null ? defaultImage : img;
 
@@ -150,7 +156,7 @@ export default class BookView extends React.PureComponent {
                     <BookImage url={url} src={imageSource} />
                   </div>
                   <div className="count-container">
-                    <div className={`count count--${displayMode}`}>{`TOTAL: ${total} / FREE: ${free}`}</div>
+                    <div className={`count count--${displayMode}`}>{`TOTAL: ${count} / FREE: ${free}`}</div>
                   </div>
                   {author != null ? (
                     <div className="author-container">
