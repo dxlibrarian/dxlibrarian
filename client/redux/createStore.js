@@ -25,10 +25,15 @@ export const createStore = () => {
       jwtToken = Cookies.get('jwtToken');
     }
 
+    const settings = {};
+    try {
+      Object.assign(settings, JSON.parse(Cookies.get('settings')));
+    } catch (error) {}
+
     if (jwtToken != null && jwtToken.constructor === String && jwtToken.length > 0) {
-      store.dispatch(login(jwtToken));
+      store.dispatch(login(jwtToken, settings));
     } else {
-      store.dispatch(authorize(jwtToken));
+      store.dispatch(authorize(jwtToken, settings));
     }
   }
 

@@ -5,7 +5,9 @@ import {
   UPDATE_SEARCH_SORT_BY,
   UPDATE_SEARCH_FILTER_BY,
   UPDATE_SEARCH_DISPLAY_MODE,
-  SEARCH_BOOKS_SUCCESS
+  SEARCH_BOOKS_SUCCESS,
+  AUTHORIZE,
+  LOGIN
 } from '../actionTypes';
 
 const sortFunctions = {
@@ -28,6 +30,13 @@ const initialState = {
 
 export const search = (state = initialState, action) => {
   switch (action.type) {
+    case AUTHORIZE:
+    case LOGIN: {
+      return {
+        ...state,
+        ...action.payload.settings
+      };
+    }
     case UPDATE_SEARCH_TEXT: {
       return {
         ...state,

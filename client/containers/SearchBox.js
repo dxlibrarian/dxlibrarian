@@ -119,6 +119,10 @@ export default function SearchBox() {
 
   const placeholder = getPlaceholder(searchBy);
 
+  if (!isMounted) {
+    return null;
+  }
+
   return (
     <div>
       <Paper elevation={4} component="form" className={classes.searchBox}>

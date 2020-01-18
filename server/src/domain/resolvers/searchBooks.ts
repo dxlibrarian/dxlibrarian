@@ -7,21 +7,43 @@ import { validate } from '../../utils/validate';
 
 import { EntityName, Resolver, SortBy, SearchBy, Location } from '../../constants';
 
-function getQuery(params: { text: string; searchByTitle: boolean; searchByAuthor: boolean; filterBy: Location }) {
-  const { text, searchByTitle, searchByAuthor } = params;
+function getQuery(params: {
+  text: string;
+  searchByTitle: boolean;
+  searchByAuthor: boolean;
+  filterBy: Array<Location>;
+}) {
+  const { text, searchByTitle, searchByAuthor, filterBy } = params;
 
   const regExp = new RegExp(escapeStringRegexp(text), 'i');
 
   if (searchByTitle && searchByAuthor) {
     return {
-      $or: [{ title: regExp }, { author: regExp }]
+      $or: [
+        {
+          title: regExp,
+          location: { $in: filterBy }
+        },
+        {
+          author: regExp,
+          location: { $in: filterBy }
+        }
+      ]
     };
   } else if (!searchByTitle && searchByAuthor) {
-    return { author: regExp };
+    return {
+      author: regExp,
+      location: { $in: filterBy }
+    };
   } else if (searchByTitle && !searchByAuthor) {
-    return { title: regExp };
+    return {
+      title: regExp,
+      location: { $in: filterBy }
+    };
   } else {
-    return {};
+    return {
+      location: { $in: filterBy }
+    };
   }
 }
 

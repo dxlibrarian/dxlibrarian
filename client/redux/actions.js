@@ -18,16 +18,20 @@ export const noop = () => ({
   payload: {}
 });
 
-export const login = jwtToken => ({
+export const login = (jwtToken, settings) => ({
   type: LOGIN,
   payload: {
-    jwtToken
+    jwtToken,
+    settings
   }
 });
 
-export const authorize = () => ({
+export const authorize = (jwtToken, settings) => ({
   type: AUTHORIZE,
-  payload: {}
+  payload: {
+    jwtToken,
+    settings
+  }
 });
 
 export const searchBooksRequest = (text, searchBy, filterBy, requestId) => ({

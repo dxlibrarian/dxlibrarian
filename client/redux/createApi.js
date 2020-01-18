@@ -48,14 +48,15 @@ export function createApi() {
     return response.json();
   }
 
-  return {
-    showError(error) {
-      toast(error.message, {
-        type: toast.TYPE.ERROR,
-        autoClose: 5000,
-        draggable: false
-      });
-    },
+  function showError(error) {
+    toast(`FetchError: ${error.message}`, {
+      type: toast.TYPE.ERROR,
+      autoClose: 5000,
+      draggable: false
+    });
+  }
+
+  const api = {
     searchBooks({ text, searchBy, filterBy }) {
       validate(
         {
@@ -78,4 +79,18 @@ export function createApi() {
       });
     }
   };
+
+  for (const methodName of Object.keys(api)) {
+    const method = api[methodName];
+    api[methodName] = async (...args) => {
+      try {
+        return await method(...args);
+      } catch (error) {
+        showError(error);
+        throw error;
+      }
+    };
+  }
+
+  return api;
 }

@@ -36,7 +36,6 @@ export const searchMiddleware = api => store => {
             filterBy
           });
         } catch (error) {
-          await api.showError(error);
           store.dispatch(searchBooksCancel(text, searchBy, filterBy, requestId));
           break;
         }
