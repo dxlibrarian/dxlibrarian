@@ -86,7 +86,7 @@ export default projection
 
     yield pullEQ('likedBooks', bookId);
   })
-  .on(Event.BOOK_TRACKED_BY_USER, function*({ event, api: { pushFront } }) {
+  .on(Event.BOOK_TRACKED_BY_USER, function*({ event, api: { addToSet } }) {
     validate(
       event.payload,
       tcomb.struct({
@@ -97,7 +97,7 @@ export default projection
 
     const { bookId } = event.payload;
 
-    yield pushFront('trackedBooks', bookId);
+    yield addToSet('trackedBooks', bookId);
   })
   .on(Event.BOOK_UNTRACKED_BY_USER, function*({ event, api: { pullEQ } }) {
     validate(
@@ -112,7 +112,7 @@ export default projection
 
     yield pullEQ('trackedBooks', bookId);
   })
-  .on(Event.BOOK_TAKEN_BY_USER, function*({ event, api: { pushFront } }) {
+  .on(Event.BOOK_TAKEN_BY_USER, function*({ event, api: { addToSet } }) {
     validate(
       event.payload,
       tcomb.struct({
@@ -123,8 +123,8 @@ export default projection
 
     const { bookId } = event.payload;
 
-    yield pushFront('activeBooks', bookId);
-    yield pushFront('historyBooks', bookId);
+    yield addToSet('activeBooks', bookId);
+    yield addToSet('historyBooks', bookId);
   })
   .on(Event.BOOK_RETURNED_BY_USER, function*({ event, api: { pullEQ } }) {
     validate(

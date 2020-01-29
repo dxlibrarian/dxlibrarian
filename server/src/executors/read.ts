@@ -1,5 +1,6 @@
 import { createDomain } from '../domain/createDomain';
 import { getLog } from '../utils/getLog';
+import { getRootJwtToken } from '../utils/getRootJwtToken';
 
 const log = getLog('dxlibrarian:import-users');
 
@@ -12,7 +13,11 @@ export async function read(params: { resolverName: string; resolverArgs: { [key:
     log.debug('Executor "read" has been started');
 
     log.debug('Operation "read" has been started');
-    const result = await read(resolverName, resolverArgs);
+    const jwtToken = getRootJwtToken();
+    const result = await read(resolverName, {
+      ...resolverArgs,
+      jwtToken
+    });
     log.debug('Operation "read" has been finished');
 
     return result;

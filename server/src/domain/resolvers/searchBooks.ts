@@ -4,8 +4,9 @@ import escapeStringRegexp from 'escape-string-regexp';
 import { resolver } from '../../reventex/server';
 
 import { validate } from '../../utils/validate';
+import { parseUser } from '../../utils/parseUser';
 
-import { EntityName, Resolver, SortBy, SearchBy, Location } from '../../constants';
+import { EntityName, Resolver, SearchBy, Location } from '../../constants';
 
 function getQuery(params: {
   text: string;
@@ -57,7 +58,8 @@ export default resolver.name(Resolver.SEARCH_BOOKS).on(async ({ database, sessio
     })
   );
 
-  const { text, searchBy, filterBy } = args;
+  const { text, searchBy, filterBy, jwtToken } = args;
+  parseUser(jwtToken);
 
   const searchByAuthor = searchBy.includes(SearchBy.AUTHOR);
   const searchByTitle = searchBy.includes(SearchBy.TITLE);

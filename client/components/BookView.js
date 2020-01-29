@@ -8,6 +8,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Link from '../components/Link';
 
 const defaultImage = '/images/book-placeholder.jpg';
+const spinnerImage = '/images/spinner.gif';
 
 const useStyles = makeStyles(() => ({
   image: {
@@ -41,7 +42,7 @@ function BookImage({ url, src }) {
 export default class BookView extends React.PureComponent {
   // eslint-disable-next-line no-unused-vars
   state = {
-    img: '/images/spinner.gif'
+    img: spinnerImage
   };
 
   componentDidMount() {
@@ -110,6 +111,30 @@ export default class BookView extends React.PureComponent {
     this.book = domElement;
   };
 
+  onTake = () => {
+    this.props.onTakeBook(this.props.bookId, this.props.userId);
+  };
+
+  onReturn = () => {
+    this.props.onReturnBook(this.props.bookId, this.props.userId);
+  };
+
+  onLike = () => {
+    this.props.onLikeBook(this.props.bookId, this.props.userId);
+  };
+
+  onDislike = () => {
+    this.props.onDislikeBook(this.props.bookId, this.props.userId);
+  };
+
+  onTrack = () => {
+    this.props.onTrackBook(this.props.bookId, this.props.userId);
+  };
+
+  onUntrack = () => {
+    this.props.onUntrackBook(this.props.bookId, this.props.userId);
+  };
+
   static defaultProps = {
     isLiked: false,
     isActive: false,
@@ -127,7 +152,14 @@ export default class BookView extends React.PureComponent {
     likes: PropTypes.arrayOf(PropTypes.string).isRequired,
     activeUsers: PropTypes.arrayOf(PropTypes.string).isRequired,
     trackers: PropTypes.arrayOf(PropTypes.string).isRequired,
-    userId: PropTypes.string.isRequired
+    userId: PropTypes.string.isRequired,
+    bookId: PropTypes.string.isRequired,
+    onTakeBook: PropTypes.func.isRequired,
+    onReturnBook: PropTypes.func.isRequired,
+    onTrackBook: PropTypes.func.isRequired,
+    onUntrackBook: PropTypes.func.isRequired,
+    onLikeBook: PropTypes.func.isRequired,
+    onDislikeBook: PropTypes.func.isRequired
   };
 
   render() {
@@ -166,13 +198,13 @@ export default class BookView extends React.PureComponent {
                   <div className="controls-container">
                     <div className="controls">
                       {isActive ? (
-                        <Button>Return</Button>
+                        <Button onClick={this.onReturn}>Return</Button>
                       ) : free ? (
-                        <Button>Take</Button>
+                        <Button onClick={this.onTake}>Take</Button>
                       ) : (
                         <Button disabled={true}>Take</Button>
                       )}
-                      <Button>
+                      <Button onClick={isLiked ? this.onDislike : this.onLike}>
                         <Favorite
                           color="primary"
                           style={{
@@ -185,9 +217,9 @@ export default class BookView extends React.PureComponent {
                       {isActive ? (
                         <Button disabled={true}>Track</Button>
                       ) : isTracked ? (
-                        <Button>Untrack</Button>
+                        <Button onClick={this.onUntrack}>Untrack</Button>
                       ) : (
-                        <Button>Track</Button>
+                        <Button onClick={this.onTrack}>Track</Button>
                       )}
                     </div>
                   </div>

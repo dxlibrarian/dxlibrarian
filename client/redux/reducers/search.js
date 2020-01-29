@@ -7,7 +7,19 @@ import {
   UPDATE_SEARCH_DISPLAY_MODE,
   SEARCH_BOOKS_SUCCESS,
   AUTHORIZE,
-  LOGIN
+  LOGIN,
+  TAKE_BOOK,
+  ROLLBACK_TAKE_BOOK,
+  RETURN_BOOK,
+  ROLLBACK_RETURN_BOOK,
+  TRACK_BOOK,
+  ROLLBACK_TRACK_BOOK,
+  UNTRACK_BOOK,
+  ROLLBACK_UNTRACK_BOOK,
+  LIKE_BOOK,
+  ROLLBACK_LIKE_BOOK,
+  DISLIKE_BOOK,
+  ROLLBACK_DISLIKE_BOOK
 } from '../actionTypes';
 
 const sortFunctions = {
@@ -17,6 +29,18 @@ const sortFunctions = {
   [SortBy.AUTHOR_DESC]: (a, b) => (a.author > b.author ? -1 : a.author < b.author ? 1 : 0),
   [SortBy.LIKES_ASC]: (a, b) => (a.likesCount > b.likesCount ? 1 : a.likesCount < b.likesCount ? -1 : 0),
   [SortBy.LIKES_DESC]: (a, b) => (a.likesCount > b.likesCount ? -1 : a.likesCount < b.likesCount ? 1 : 0)
+};
+
+const getNextBooks = (books, bookId, updater) => {
+  const nextBooks = books.concat([]);
+  const countBooks = books.length;
+  for (let bookIndex = 0; bookIndex < countBooks; bookIndex++) {
+    const book = nextBooks[bookIndex];
+    if (book.bookId === bookId) {
+      nextBooks[bookIndex] = updater(book);
+    }
+  }
+  return nextBooks;
 };
 
 const initialState = {
@@ -76,6 +100,71 @@ export const search = (state = initialState, action) => {
           .sort(sortFunctions[state.sortBy])
       };
     }
+    case TAKE_BOOK:
+    case ROLLBACK_RETURN_BOOK: {
+      return {
+        ...state,
+        books: getNextBooks(state.books, action.payload.bookId, book => ({
+          ...book,
+          activeUsers: book.activeUsers.filter(userId => userId !== action.payload.userId).concat(action.payload.userId)
+        }))
+      };
+    }
+    case RETURN_BOOK:
+    case ROLLBACK_TAKE_BOOK: {
+      return {
+        ...state,
+        books: getNextBooks(state.books, action.payload.bookId, book => ({
+          ...book,
+          activeUsers: book.activeUsers.filter(userId => userId !== action.payload.userId)
+        }))
+      };
+    }
+
+    case LIKE_BOOK:
+    case ROLLBACK_DISLIKE_BOOK: {
+      return {
+        ...state,
+        books: getNextBooks(state.books, action.payload.bookId, book => ({
+          ...book,
+          likes: book.likes.filter(userId => userId !== action.payload.userId).concat(action.payload.userId),
+          likesCount: ~~book.likesCount + 1
+        }))
+      };
+    }
+    case DISLIKE_BOOK:
+    case ROLLBACK_DISLIKE_BOOK: {
+      return {
+        ...state,
+        books: getNextBooks(state.books, action.payload.bookId, book => ({
+          ...book,
+          likes: book.likes.filter(userId => userId !== action.payload.userId),
+          likesCount: ~~book.likesCount - 1
+        }))
+      };
+    }
+
+    case TRACK_BOOK:
+    case ROLLBACK_TRACK_BOOK: {
+      return {
+        ...state,
+        books: getNextBooks(state.books, action.payload.bookId, book => ({
+          ...book,
+          trackers: book.trackers.filter(userId => userId !== action.payload.userId).concat(action.payload.userId)
+        }))
+      };
+    }
+    case UNTRACK_BOOK:
+    case ROLLBACK_UNTRACK_BOOK: {
+      return {
+        ...state,
+        books: getNextBooks(state.books, action.payload.bookId, book => ({
+          ...book,
+          trackers: book.trackers.filter(userId => userId !== action.payload.userId)
+        }))
+      };
+    }
+
     default: {
       return state;
     }

@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
+import { bindActionCreators } from 'redux';
 import * as PropTypes from 'prop-types';
 import sizeMe from 'react-sizeme';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
+import { takeBook, returnBook, trackBook, untrackBook, likeBook, dislikeBook } from '../redux/actions';
 import BookView from '../components/BookView';
 
 function booksSelector(state) {
@@ -13,10 +15,28 @@ function booksSelector(state) {
   };
 }
 
+export function useActions() {
+  const dispatch = useDispatch();
+  return useMemo(() => {
+    return bindActionCreators(
+      {
+        onTakeBook: takeBook,
+        onReturnBook: returnBook,
+        onTrackBook: trackBook,
+        onUntrackBook: untrackBook,
+        onLikeBook: likeBook,
+        onDislikeBook: dislikeBook
+      },
+      dispatch
+    );
+  }, [dispatch]);
+}
+
 function BooksContainer(props) {
   const { size } = props;
 
   const { books, displayMode, userId } = useSelector(booksSelector);
+  const { onTakeBook, onReturnBook, onTrackBook, onUntrackBook, onLikeBook, onDislikeBook } = useActions();
 
   const countCardsInRow = Math.floor(size.width / 300) || 1;
 
@@ -24,6 +44,7 @@ function BooksContainer(props) {
     ({ bookId, title, author, count, free, img, likesCount, likes, activeUsers, trackers }, index) => (
       <BookView
         key={index}
+        bookId={bookId}
         userId={userId}
         url={`/book?id=${bookId}`}
         title={title}
@@ -35,6 +56,12 @@ function BooksContainer(props) {
         likesCount={likesCount}
         activeUsers={activeUsers}
         trackers={trackers}
+        onTakeBook={onTakeBook}
+        onReturnBook={onReturnBook}
+        onTrackBook={onTrackBook}
+        onUntrackBook={onUntrackBook}
+        onLikeBook={onLikeBook}
+        onDislikeBook={onDislikeBook}
       />
     )
   );

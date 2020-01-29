@@ -4,6 +4,7 @@ import tcomb from 'tcomb-validation';
 import { toast } from 'react-toastify';
 
 import { validate } from '../validate';
+import { serialize, EntityId } from '../../server/src/reventex/client.mjs';
 
 import { API_GATEWAY_URL, SearchBy, Location } from '../constants';
 
@@ -11,7 +12,8 @@ export function createApi() {
   function getHeaders() {
     return {
       Authorization: `Bearer ${Cookies.get('jwtToken')}`,
-      Accept: 'application/json'
+      Accept: 'application/json',
+      'Content-type': 'application/json'
     };
   }
 
@@ -76,6 +78,25 @@ export function createApi() {
         text,
         searchBy,
         filterBy
+      });
+    },
+    publish({ events }) {
+      validate(
+        {
+          events
+        },
+        tcomb.struct({
+          events: tcomb.list(
+            tcomb.struct({
+              type: tcomb.String,
+              payload: tcomb.Object
+            })
+          )
+        })
+      );
+
+      return post('/api/publish', {
+        events: serialize(events)
       });
     }
   };

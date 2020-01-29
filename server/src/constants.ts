@@ -233,4 +233,5 @@ export type DXLibrarianUser = {
   userId: string;
   name: string;
   email: string;
+  isAdmin?: boolean;
 };
