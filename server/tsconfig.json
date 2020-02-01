@@ -26,7 +26,6 @@
       "content-disposition",
       "jsonwebtoken",
       "mongodb",
-      "query-string",
       "./external"
     ]
   }

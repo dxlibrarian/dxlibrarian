@@ -7,6 +7,7 @@ import books from './projections/books';
 import getAllUsers from './resolvers/getAllUsers';
 import getUser from './resolvers/getUser';
 import searchBooks from './resolvers/searchBooks';
+import getBookInfoById from './resolvers/getBookInfoById';
 
 import {
   MONGO_USER,
@@ -30,4 +31,4 @@ export const createDomain = () =>
     .database(DATABASE_NAME)
     .eventStore(EVENT_STORE_COLLECTION_NAME)
     .projections([users, books])
-    .resolvers([getAllUsers, getUser, searchBooks]);
+    .resolvers([getAllUsers, getUser, searchBooks, getBookInfoById]);

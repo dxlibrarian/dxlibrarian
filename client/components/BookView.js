@@ -39,6 +39,11 @@ function BookImage({ url, src }) {
   );
 }
 
+BookImage.propTypes = {
+  url: PropTypes.string.isRequired,
+  src: PropTypes.string.isRequired
+};
+
 export default class BookView extends React.PureComponent {
   // eslint-disable-next-line no-unused-vars
   state = {
@@ -95,7 +100,7 @@ export default class BookView extends React.PureComponent {
     }
 
     let top = book.offsetTop;
-    let height = book.offsetHeight;
+    const height = book.offsetHeight;
 
     while (book.offsetParent) {
       book = book.offsetParent;
@@ -143,7 +148,7 @@ export default class BookView extends React.PureComponent {
   };
 
   static propTypes = {
-    url: PropTypes.string.isRequired,
+    img: PropTypes.string,
     title: PropTypes.string.isRequired,
     author: PropTypes.string,
     count: PropTypes.number.isRequired,
@@ -163,8 +168,10 @@ export default class BookView extends React.PureComponent {
   };
 
   render() {
-    const { url, title, author, count, displayMode, likesCount, likes, activeUsers, trackers, userId } = this.props;
+    const { bookId, title, author, count, displayMode, likesCount, likes, activeUsers, trackers, userId } = this.props;
     const { img } = this.state;
+
+    const url = `/book?id=${bookId}`;
 
     const isActive = activeUsers.indexOf(userId) !== -1;
     const isTracked = trackers.indexOf(userId) !== -1;
@@ -199,7 +206,7 @@ export default class BookView extends React.PureComponent {
                     <div className="controls">
                       {isActive ? (
                         <Button onClick={this.onReturn}>Return</Button>
-                      ) : free ? (
+                      ) : free > 0 ? (
                         <Button onClick={this.onTake}>Take</Button>
                       ) : (
                         <Button disabled={true}>Take</Button>

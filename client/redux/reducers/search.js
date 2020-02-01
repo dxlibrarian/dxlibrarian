@@ -133,7 +133,7 @@ export const search = (state = initialState, action) => {
       };
     }
     case DISLIKE_BOOK:
-    case ROLLBACK_DISLIKE_BOOK: {
+    case ROLLBACK_LIKE_BOOK: {
       return {
         ...state,
         books: getNextBooks(state.books, action.payload.bookId, book => ({

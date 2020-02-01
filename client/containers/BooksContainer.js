@@ -41,12 +41,11 @@ function BooksContainer(props) {
   const countCardsInRow = Math.floor(size.width / 300) || 1;
 
   const children = books.map(
-    ({ bookId, title, author, count, free, img, likesCount, likes, activeUsers, trackers }, index) => (
+    ({ bookId, title, author, count, img, likesCount, likes, activeUsers, trackers }, index) => (
       <BookView
         key={index}
         bookId={bookId}
         userId={userId}
-        url={`/book?id=${bookId}`}
         title={title}
         author={author}
         count={count}

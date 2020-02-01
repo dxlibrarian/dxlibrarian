@@ -1,10 +1,10 @@
 import Cookies from 'js-cookie';
-import queryString from 'query-string';
+import { stringify as createQueryString } from 'query-string';
 import tcomb from 'tcomb-validation';
 import { toast } from 'react-toastify';
 
 import { validate } from '../validate';
-import { serialize, EntityId } from '../../server/src/reventex/client.mjs';
+import { serialize } from '../../server/src/reventex/client.mjs';
 
 import { API_GATEWAY_URL, SearchBy, Location } from '../constants';
 
@@ -26,7 +26,7 @@ export function createApi() {
   }
 
   async function get(url, data) {
-    const query = Object.keys(data).length === 0 ? '' : `?${queryString.stringify(data, { arrayFormat: 'bracket' })}`;
+    const query = Object.keys(data).length === 0 ? '' : `?${createQueryString(data, { arrayFormat: 'bracket' })}`;
 
     const response = await fetch(`${API_GATEWAY_URL}${url}${query}`, {
       method: 'GET',
@@ -59,6 +59,21 @@ export function createApi() {
   }
 
   const api = {
+    getBookInfoById({ bookId }) {
+      validate(
+        {
+          bookId
+        },
+        tcomb.struct({
+          bookId: tcomb.String
+        })
+      );
+
+      return get('/api/read', {
+        resolverName: 'getBookInfoById',
+        bookId
+      });
+    },
     searchBooks({ text, searchBy, filterBy }) {
       validate(
         {

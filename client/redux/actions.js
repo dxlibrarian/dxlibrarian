@@ -22,7 +22,10 @@ import {
   LIKE_BOOK,
   ROLLBACK_LIKE_BOOK,
   DISLIKE_BOOK,
-  ROLLBACK_DISLIKE_BOOK
+  ROLLBACK_DISLIKE_BOOK,
+  GET_BOOK_INFO_BY_ID_REQUEST,
+  GET_BOOK_INFO_BY_ID_SUCCESS,
+  GET_BOOK_INFO_BY_ID_FAILURE
 } from './actionTypes';
 
 export const noop = () => ({
@@ -86,6 +89,30 @@ export const searchBooksCancel = (text, searchBy, sortBy, filterBy, requestId) =
     filterBy,
     requestId
   }
+});
+
+export const getBookInfoByIdRequest = bookId => ({
+  type: GET_BOOK_INFO_BY_ID_REQUEST,
+  payload: {
+    bookId
+  }
+});
+
+export const getBookInfoByIdSuccess = (bookId, book, users) => ({
+  type: GET_BOOK_INFO_BY_ID_SUCCESS,
+  payload: {
+    bookId,
+    book,
+    users
+  }
+});
+
+export const getBookInfoByIdFailure = (bookId, error) => ({
+  type: GET_BOOK_INFO_BY_ID_FAILURE,
+  payload: {
+    bookId
+  },
+  error
 });
 
 export const updateSearchText = text => ({

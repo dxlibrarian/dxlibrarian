@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import TopMenu from './TopMenu';
 
@@ -10,3 +11,7 @@ export default function Layout({ children }) {
     </React.Fragment>
   );
 }
+
+Layout.propTypes = {
+  children: PropTypes.element
+};
