@@ -25,7 +25,9 @@ export default resolver.name(Resolver.GET_BOOK_INFO_BY_ID).on(async ({ database,
     {
       bookId
     },
-    { session, projection: {
+    {
+      session,
+      projection: {
         _id: 0,
         bookId: 1,
         title: 1,
@@ -35,7 +37,8 @@ export default resolver.name(Resolver.GET_BOOK_INFO_BY_ID).on(async ({ database,
         likes: 1,
         activeUsers: 1,
         trackers: 1
-      } }
+      }
+    }
   );
 
   if (book == null) {
@@ -49,12 +52,15 @@ export default resolver.name(Resolver.GET_BOOK_INFO_BY_ID).on(async ({ database,
       {
         userId: { $in: book.activeUsers }
       },
-      { session, projection: {
+      {
+        session,
+        projection: {
           _id: 0,
           userId: 1,
           email: 1,
           name: 1
-        } }
+        }
+      }
     )
     .toArray();
 
