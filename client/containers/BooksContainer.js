@@ -1,88 +1,66 @@
-import React from 'react';
-import * as PropTypes from 'prop-types';
-import sizeMe from 'react-sizeme';
-import { useSelector } from 'react-redux';
+import React, { useMemo, memo } from 'react';
+import { bindActionCreators } from 'redux';
+import { useSelector, useDispatch } from 'react-redux';
 
-import BookView from '../components/BookView';
+import { takeBook, returnBook, trackBook, untrackBook, likeBook, dislikeBook } from '../redux/actions';
+import BookCard from '../components/BookCard';
+import CardContainer from '../components/CardContainer';
 
 function booksSelector(state) {
   return {
-    books: state.books,
+    userId: state.profile.userId,
+    books: state.search.books,
     displayMode: state.search.displayMode.toLowerCase()
   };
 }
 
-function BooksContainer(props) {
-  const { size } = props;
+export function useActions() {
+  const dispatch = useDispatch();
+  return useMemo(() => {
+    return bindActionCreators(
+      {
+        onTakeBook: takeBook,
+        onReturnBook: returnBook,
+        onTrackBook: trackBook,
+        onUntrackBook: untrackBook,
+        onLikeBook: likeBook,
+        onDislikeBook: dislikeBook
+      },
+      dispatch
+    );
+  }, [dispatch]);
+}
 
-  const { books, displayMode } = useSelector(booksSelector);
-
-  const countCardsInRow = Math.floor(size.width / 300) || 1;
-
-  const children = books.map(({ id, title, author, total, free, img }, index) => (
-    <BookView
-      key={index}
-      url={`/book?id=${id}`}
-      title={title}
-      author={author}
-      total={total}
-      free={free}
-      displayMode={displayMode}
-      img={img}
-    />
-  ));
-
-  const countFakeItems = countCardsInRow - (children.length % countCardsInRow);
-  for (let fakeIndex = 0; fakeIndex < countFakeItems; fakeIndex++) {
-    children.push(null);
-  }
+function BooksContainer() {
+  const { books, displayMode, userId } = useSelector(booksSelector);
+  const { onTakeBook, onReturnBook, onTrackBook, onUntrackBook, onLikeBook, onDislikeBook } = useActions();
 
   return (
-    <div className="root">
-      <div className="container">
-        {children.map((item, itemIndex) => (
-          <div className="item" key={itemIndex} style={{ maxWidth: `${size.width - 20}px` }}>
-            {item}
-          </div>
-        ))}
-      </div>
-      <style jsx>{`
-        .root {
-          text-align: center;
-          overflow: hidden;
-        }
-        .container {
-          padding: 5px;
-          box-sizing: border-box;
-          display: inline-block;
-          margin-left: auto;
-          margin-right: auto;
-        }
-        .container:after {
-          clear: both;
-        }
-        .row {
-          white-space: nowrap;
-        }
-        .item {
-          white-space: normal;
-          display: inline-block;
-          padding: 10px;
-          width: 300px;
-          box-sizing: border-box;
-          overflow: hidden;
-          vertical-align: top;
-        }
-      `}</style>
-    </div>
+    <CardContainer>
+      {books.map(({ bookId, title, author, count, img, likesCount, likes, activeUsers, trackers }, index) => (
+        <BookCard
+          key={index}
+          bookId={bookId}
+          userId={userId}
+          title={title}
+          author={author}
+          count={count}
+          displayMode={displayMode}
+          img={img}
+          likes={likes}
+          likesCount={likesCount}
+          activeUsers={activeUsers}
+          trackers={trackers}
+          onTakeBook={onTakeBook}
+          onReturnBook={onReturnBook}
+          onTrackBook={onTrackBook}
+          onUntrackBook={onUntrackBook}
+          onLikeBook={onLikeBook}
+          onDislikeBook={onDislikeBook}
+        />
+      ))}
+    </CardContainer>
   );
 }
 
-BooksContainer.propTypes = {
-  size: PropTypes.shape({
-    width: PropTypes.number,
-    height: PropTypes.number
-  }).isRequired
-};
-
-export default sizeMe()(BooksContainer);
+export default memo(BooksContainer);

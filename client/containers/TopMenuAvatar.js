@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { useSelector } from 'react-redux';
 import IconButton from '@material-ui/core/IconButton';
 import AccountCircle from '@material-ui/icons/AccountCircle';
@@ -17,7 +17,7 @@ function avatarSelector(state) {
   return state.profile.avatar;
 }
 
-export default function TopMenuAvatar() {
+function TopMenuAvatar() {
   const classes = useStyles();
 
   const avatar = useSelector(avatarSelector);
@@ -30,3 +30,5 @@ export default function TopMenuAvatar() {
     </Link>
   );
 }
+
+export default memo(TopMenuAvatar);

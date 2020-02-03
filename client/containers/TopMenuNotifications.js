@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { useSelector } from 'react-redux';
 import IconButton from '@material-ui/core/IconButton';
 import Badge from '@material-ui/core/Badge';
@@ -18,7 +18,7 @@ function notificationSelector(state) {
   return state.notifications.length;
 }
 
-export default function TopMenuNotifications() {
+function TopMenuNotifications() {
   const notifications = useSelector(notificationSelector);
 
   const classes = useStyles();
@@ -33,3 +33,5 @@ export default function TopMenuNotifications() {
     </Link>
   );
 }
+
+export default memo(TopMenuNotifications);

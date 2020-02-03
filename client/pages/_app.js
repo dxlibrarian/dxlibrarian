@@ -4,6 +4,7 @@ import Head from 'next/head';
 import { Provider } from 'react-redux';
 import { ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import { ToastContainer } from 'react-toastify';
 
 import theme from '../theme';
 import { createStore } from '../redux/createStore';
@@ -26,6 +27,7 @@ export default class MyApp extends App {
       <React.Fragment>
         <Head>
           <title>DXLibrarian</title>
+          <link href="/ReactToastify.css" rel="stylesheet" />
         </Head>
         <Provider store={this.store}>
           <ThemeProvider theme={theme}>
@@ -33,6 +35,7 @@ export default class MyApp extends App {
             <Component {...pageProps} />
           </ThemeProvider>
         </Provider>
+        <ToastContainer />
       </React.Fragment>
     );
   }

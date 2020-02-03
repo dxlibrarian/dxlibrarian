@@ -42,7 +42,7 @@ export async function createBook(params: {
   const { publish, close } = createDomain();
 
   try {
-    log.debug('Create book has been started');
+    log.debug('Executor "createBook" has been started');
 
     log.debug('Operation "publish" has been started');
     await publish([
@@ -64,9 +64,9 @@ export async function createBook(params: {
     ]);
     log.debug('Operation "publish" has been finished');
 
-    log.debug('Create book has been finished');
+    log.debug('Executor "createBook" has been finished');
   } catch (error) {
-    log.debug('Create book has been failed');
+    log.debug('Executor "createBook" has been failed');
     throw error;
   } finally {
     log.debug('Operation "close" has been started');

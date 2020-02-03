@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect, memo } from 'react';
 import { bindActionCreators } from 'redux';
 import { useSelector, useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
@@ -46,7 +46,8 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function searchSelector(state) {
-  return state.search;
+  const { text, searchBy, sortBy, filterBy, displayMode } = state.search;
+  return { text, searchBy, sortBy, filterBy, displayMode };
 }
 
 function getPlaceholder(searchBy) {
@@ -99,14 +100,28 @@ function renderSelectMultiple(selected) {
   return selected.join(', ');
 }
 
-export default function SearchBox() {
+function SearchBox() {
   const classes = useStyles();
 
   const { text, searchBy, sortBy, filterBy, displayMode } = useSelector(searchSelector);
 
   const { onChangeText, onChangeSearchBy, onChangeSortBy, onChangeDisplayMode, onChangeFilterBy } = useActions();
 
+  const [isMounted, updateMountStatus] = useState(null);
+
+  useEffect(() => {
+    if (!isMounted) {
+      console.log('searchbox mounted');
+      updateMountStatus(true);
+      onChangeText({ target: { value: text } });
+    }
+  });
+
   const placeholder = getPlaceholder(searchBy);
+
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <div>
@@ -115,6 +130,7 @@ export default function SearchBox() {
           <InputBase
             placeholder={placeholder}
             inputProps={{ 'aria-label': 'search' }}
+            autoFocus={true}
             value={text}
             onChange={onChangeText}
           />
@@ -168,3 +184,5 @@ export default function SearchBox() {
     </div>
   );
 }
+
+export default memo(SearchBox);

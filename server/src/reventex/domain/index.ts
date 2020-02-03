@@ -306,6 +306,9 @@ export class Domain {
       for (let eventIndex = 0; eventIndex < countEvents; eventIndex++) {
         const event = events[eventIndex];
         const entityIds = extractEntityIdsFromEvent(event);
+        if (entityIds.length === 0) {
+          throw new Error(`Incorrect event: ${JSON.stringify(event)}`);
+        }
 
         entityIdsByEvent.set(event, entityIds);
       }

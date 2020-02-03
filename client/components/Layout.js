@@ -1,14 +1,19 @@
-import React from 'react';
+import React, { memo } from 'react';
+import PropTypes from 'prop-types';
 
 import TopMenu from './TopMenu';
-import Copyright from './Copyright';
 
-export default function Layout({ children }) {
+function Layout({ children }) {
   return (
     <React.Fragment>
       <TopMenu />
       {children}
-      <Copyright />
     </React.Fragment>
   );
 }
+
+Layout.propTypes = {
+  children: PropTypes.element
+};
+
+export default memo(Layout);

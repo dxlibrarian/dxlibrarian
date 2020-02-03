@@ -1,47 +1,15 @@
 import React from 'react';
 import * as PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
-import Button from '@material-ui/core/Button';
-import Favorite from '@material-ui/icons/Favorite';
-import { makeStyles } from '@material-ui/core/styles';
 
-import Link from '../components/Link';
+import CardImage from './CardImage';
 
-const defaultImage = '/images/book-placeholder.jpg';
+const spinnerImage = '/images/spinner.gif';
 
-const useStyles = makeStyles(() => ({
-  image: {
-    color: 'inherit',
-    textDecoration: 'none',
-    display: 'table-cell',
-    height: '100%',
-    backgroundPositionX: '50%',
-    backgroundPositionY: '50%',
-    backgroundRepeat: 'no-repeat',
-    backgroundSize: 'contain',
-    cursor: 'pointer'
-  }
-}));
-
-function BookImage({ url, src }) {
-  const classes = useStyles();
-
-  return (
-    <Link
-      href={url}
-      naked
-      className={classes.image}
-      style={{
-        backgroundImage: `url("${src}")`
-      }}
-    />
-  );
-}
-
-export default class BookView extends React.PureComponent {
+export default class Card extends React.PureComponent {
   // eslint-disable-next-line no-unused-vars
   state = {
-    img: '/images/spinner.gif'
+    img: spinnerImage
   };
 
   componentDidMount() {
@@ -94,7 +62,7 @@ export default class BookView extends React.PureComponent {
     }
 
     let top = book.offsetTop;
-    let height = book.offsetHeight;
+    const height = book.offsetHeight;
 
     while (book.offsetParent) {
       book = book.offsetParent;
@@ -110,80 +78,46 @@ export default class BookView extends React.PureComponent {
     this.book = domElement;
   };
 
-  static defaultProps = {
-    isLiked: false,
-    isActive: false,
-    isTracked: false,
-    likesCount: 0
-  };
-
   static propTypes = {
-    url: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-    author: PropTypes.string,
-    total: PropTypes.number.isRequired,
-    free: PropTypes.number.isRequired,
+    img: PropTypes.string,
+    url: PropTypes.string,
+    topText: PropTypes.string.isRequired,
+    middleText: PropTypes.string,
+    bottomText: PropTypes.string,
+    elevation: PropTypes.number,
     displayMode: PropTypes.oneOf(['standard', 'compact', 'minimal']).isRequired,
-    isLiked: PropTypes.bool,
-    isActive: PropTypes.bool,
-    isTracked: PropTypes.bool,
-    likesCount: PropTypes.number
+    children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired
   };
 
   render() {
-    const { url, title, author, total, free, displayMode, isLiked, isActive, isTracked, likesCount } = this.props;
+    const { url, topText, middleText, bottomText, displayMode, elevation, children } = this.props;
     const { img } = this.state;
-
-    const imageSource = img == null ? defaultImage : img;
 
     return (
       <span>
-        <Paper elevation={4}>
+        <Paper elevation={elevation}>
           <div className="root" ref={this.refRoot}>
             <div className={`card card--${displayMode}`}>
               <div className="container">
                 <div className="sub-container">
-                  <div className="title-container">
-                    <div className={`title title--${displayMode}`}>{title}</div>
+                  <div className="top-text-container">
+                    <div className={`top-text top-text--${displayMode}`}>{topText}</div>
                   </div>
                   <div className="image-container">
-                    <BookImage url={url} src={imageSource} />
+                    <CardImage url={url} src={img} />
                   </div>
-                  <div className="count-container">
-                    <div className={`count count--${displayMode}`}>{`TOTAL: ${total} / FREE: ${free}`}</div>
+                  <div className="middle-text-container">
+                    <div className={`middle-text middle-text--${displayMode}`}>
+                      {middleText != null ? middleText : null}
+                    </div>
                   </div>
-                  {author != null ? (
-                    <div className="author-container">
-                      <div className={`author author--${displayMode}`}>{author}</div>
+                  {bottomText != null ? (
+                    <div className="bottom-text-container">
+                      <div className={`bottom-text bottom-text--${displayMode}`}>{bottomText}</div>
                     </div>
                   ) : null}
                   <div className="controls-container">
-                    <div className="controls">
-                      {isActive ? (
-                        <Button>Return</Button>
-                      ) : free ? (
-                        <Button>Take</Button>
-                      ) : (
-                        <Button disabled={true}>Take</Button>
-                      )}
-                      <Button>
-                        <Favorite
-                          color="primary"
-                          style={{
-                            opacity: isLiked ? 0.66 : 0.25,
-                            marginRight: likesCount > 0 ? '5px' : undefined
-                          }}
-                        />
-                        {likesCount > 0 ? likesCount : ''}
-                      </Button>
-                      {isActive ? (
-                        <Button disabled={true}>Track</Button>
-                      ) : isTracked ? (
-                        <Button>Untrack</Button>
-                      ) : (
-                        <Button>Track</Button>
-                      )}
-                    </div>
+                    <div className="controls">{children != null ? children : null}</div>
                   </div>
                 </div>
               </div>
@@ -218,44 +152,44 @@ export default class BookView extends React.PureComponent {
             width: 100%;
             height: 100%;
           }
-          .title-container {
+          .top-text-container {
             display: table-row;
           }
-          .title {
+          .top-text {
             text-align: center;
             display: table-cell;
             padding: 15px;
             font-size: 16px;
           }
-          .title--minimal {
+          .top-text--minimal {
             font-size: 13px;
           }
           .image-container {
             display: table-row;
           }
-          .author-container {
+          .bottom-text-container {
             display: table-row;
           }
-          .author {
+          .bottom-text {
             display: table-cell;
             padding: 0 15px;
             text-align: center;
             font-size: 16px;
           }
-          .author--minimal {
+          .bottom-text--minimal {
             font-size: 13px;
           }
-          .count-container {
+          .middle-text-container {
             display: table-row;
           }
-          .count {
+          .middle-text {
             display: table-cell;
             text-align: center;
             color: #666;
             font-size: 12px;
             padding: 10px 15px;
           }
-          .count--minimal {
+          .middle-text--minimal {
             font-size: 9px;
           }
           .controls-container {

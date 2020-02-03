@@ -1,26 +1,39 @@
 import Cookies from 'js-cookie';
-import queryString from 'query-string';
+import { stringify as createQueryString } from 'query-string';
 import tcomb from 'tcomb-validation';
+import { toast } from 'react-toastify';
 
 import { validate } from '../validate';
+import { serialize } from '../../server/src/reventex/client.mjs';
 
-import { API_GATEWAY_URL, SearchBy, SortBy, Location } from '../constants';
+import { API_GATEWAY_URL, SearchBy, Location } from '../constants';
 
 export function createApi() {
   function getHeaders() {
     return {
       Authorization: `Bearer ${Cookies.get('jwtToken')}`,
-      Accept: 'application/json'
+      Accept: 'application/json',
+      'Content-type': 'application/json'
     };
   }
 
+  async function maybeThrowError(response) {
+    if (response.status >= 400 && response.status <= 599) {
+      const error = new Error('Fetch error');
+      error.stack = await response.text();
+      throw error;
+    }
+  }
+
   async function get(url, data) {
-    const query = Object.keys(data).length === 0 ? '' : `?${queryString.stringify(data, { arrayFormat: 'bracket' })}`;
+    const query = Object.keys(data).length === 0 ? '' : `?${createQueryString(data, { arrayFormat: 'bracket' })}`;
 
     const response = await fetch(`${API_GATEWAY_URL}${url}${query}`, {
       method: 'GET',
       headers: getHeaders()
     });
+
+    await maybeThrowError(response);
 
     return response.json();
   }
@@ -32,39 +45,88 @@ export function createApi() {
       headers: getHeaders()
     });
 
+    await maybeThrowError(response);
+
     return response.json();
   }
 
-  return {
-    searchBooks({ text, searchBy, sortBy, filterBy }) {
+  function showError(error) {
+    toast(`FetchError: ${error.message}`, {
+      type: toast.TYPE.ERROR,
+      autoClose: 5000,
+      draggable: false
+    });
+  }
+
+  const api = {
+    getBookInfoById({ bookId }) {
+      validate(
+        {
+          bookId
+        },
+        tcomb.struct({
+          bookId: tcomb.String
+        })
+      );
+
+      return get('/api/read', {
+        resolverName: 'getBookInfoById',
+        bookId
+      });
+    },
+    searchBooks({ text, searchBy, filterBy }) {
       validate(
         {
           text,
           searchBy,
-          sortBy,
           filterBy
         },
         tcomb.struct({
           text: tcomb.String,
           searchBy: tcomb.list(tcomb.enums.of([SearchBy.AUTHOR, SearchBy.TITLE])),
-          sortBy: tcomb.enums.of([
-            SortBy.TITLE_ASC,
-            SortBy.TITLE_DESC,
-            SortBy.AUTHOR_ASC,
-            SortBy.AUTHOR_DESC,
-            SortBy.LIKES_ASC,
-            SortBy.LIKES_DESC
-          ]),
           filterBy: tcomb.list(tcomb.enums.of([Location.TULA, Location.KALUGA, Location.SPB]))
         })
       );
 
-      return get('/api/books', {
+      return get('/api/read', {
+        resolverName: 'searchBooks',
         text,
         searchBy,
-        sortBy,
         filterBy
+      });
+    },
+    publish({ events }) {
+      validate(
+        {
+          events
+        },
+        tcomb.struct({
+          events: tcomb.list(
+            tcomb.struct({
+              type: tcomb.String,
+              payload: tcomb.Object
+            })
+          )
+        })
+      );
+
+      return post('/api/publish', {
+        events: serialize(events)
       });
     }
   };
+
+  for (const methodName of Object.keys(api)) {
+    const method = api[methodName];
+    api[methodName] = async (...args) => {
+      try {
+        return await method(...args);
+      } catch (error) {
+        showError(error);
+        throw error;
+      }
+    };
+  }
+
+  return api;
 }

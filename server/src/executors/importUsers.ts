@@ -23,7 +23,7 @@ export async function importUsers() {
   const { read, publish, close } = createDomain();
 
   try {
-    log.debug('Import users has been started');
+    log.debug('Executor "importUsers" has been started');
     const [graphServiceResponse, resolverResult] = await Promise.all([
       graphService.all('/users'),
       read(Resolver.GET_ALL_USERS, {})
@@ -75,9 +75,9 @@ export async function importUsers() {
     await publish(events);
     log.debug('Operation "publish" has been finished');
 
-    log.debug('Import users has been finished');
+    log.debug('Executor "importUsers" has been finished');
   } catch (error) {
-    log.debug('Import users has been failed');
+    log.debug('Executor "importUsers" has been failed');
     throw error;
   } finally {
     log.debug('Operation "close" has been started');

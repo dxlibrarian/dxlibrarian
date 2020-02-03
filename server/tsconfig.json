@@ -7,6 +7,7 @@
     "outDir": "lib",
     "strict": false,
     "allowSyntheticDefaultImports": true,
+    "allowJs": true,
     "noImplicitAny": true,
     "esModuleInterop": true,
     "sourceMap": true,
@@ -23,11 +24,8 @@
       "passport-azure-ad",
       "cookie",
       "content-disposition",
-      "react-dom",
-      "react",
       "jsonwebtoken",
       "mongodb",
-      "query-string",
       "./external"
     ]
   }
