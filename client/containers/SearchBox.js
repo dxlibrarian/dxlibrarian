@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect, memo } from 'react';
 import { bindActionCreators } from 'redux';
 import { useSelector, useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
@@ -100,7 +100,7 @@ function renderSelectMultiple(selected) {
   return selected.join(', ');
 }
 
-export default function SearchBox() {
+function SearchBox() {
   const classes = useStyles();
 
   const { text, searchBy, sortBy, filterBy, displayMode } = useSelector(searchSelector);
@@ -130,6 +130,7 @@ export default function SearchBox() {
           <InputBase
             placeholder={placeholder}
             inputProps={{ 'aria-label': 'search' }}
+            autoFocus={true}
             value={text}
             onChange={onChangeText}
           />
@@ -183,3 +184,5 @@ export default function SearchBox() {
     </div>
   );
 }
+
+export default memo(SearchBox);

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { useRouter } from 'next/router';
@@ -50,4 +50,4 @@ Link.propTypes = {
 const RealLink = React.forwardRef((props, ref) => <Link {...props} innerRef={ref} />);
 RealLink.displayName = 'Link';
 
-export default RealLink;
+export default memo(RealLink);

@@ -7,7 +7,7 @@ import Card from './Card';
 
 const defaultImage = '/images/book-placeholder.jpg';
 
-export default class BookView extends React.PureComponent {
+export default class BookCard extends React.PureComponent {
   onTake = () => {
     this.props.onTakeBook(this.props.bookId, this.props.userId);
   };

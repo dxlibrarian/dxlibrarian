@@ -19,7 +19,8 @@ import {
   LIKE_BOOK,
   ROLLBACK_LIKE_BOOK,
   DISLIKE_BOOK,
-  ROLLBACK_DISLIKE_BOOK
+  ROLLBACK_DISLIKE_BOOK,
+  GET_BOOK_INFO_BY_ID_SUCCESS
 } from '../actionTypes';
 
 const sortFunctions = {
@@ -31,16 +32,23 @@ const sortFunctions = {
   [SortBy.LIKES_DESC]: (a, b) => (a.likesCount > b.likesCount ? -1 : a.likesCount < b.likesCount ? 1 : 0)
 };
 
-const getNextBooks = (books, bookId, updater) => {
+const getNextBooks = (books, bookId, updater, upsert) => {
   const nextBooks = books.concat([]);
   const countBooks = books.length;
+
   for (let bookIndex = 0; bookIndex < countBooks; bookIndex++) {
     const book = nextBooks[bookIndex];
     if (book.bookId === bookId) {
       nextBooks[bookIndex] = updater(book);
+      return nextBooks;
     }
   }
-  return nextBooks;
+
+  if (upsert) {
+    return nextBooks.concat(updater());
+  } else {
+    return nextBooks;
+  }
 };
 
 const initialState = {
@@ -100,6 +108,23 @@ export const search = (state = initialState, action) => {
           .sort(sortFunctions[state.sortBy])
       };
     }
+
+    case GET_BOOK_INFO_BY_ID_SUCCESS: {
+      return {
+        ...state,
+        books: getNextBooks(
+          state.books,
+          action.payload.bookId,
+          prevBook => ({
+            ...prevBook,
+            ...action.payload.book,
+            likesCount: ~~action.payload.book.likesCount + 1
+          }),
+          true
+        )
+      };
+    }
+
     case TAKE_BOOK:
     case ROLLBACK_RETURN_BOOK: {
       return {

@@ -82,7 +82,7 @@ export default class Card extends React.PureComponent {
     img: PropTypes.string,
     url: PropTypes.string,
     topText: PropTypes.string.isRequired,
-    middleText: PropTypes.string.isRequired,
+    middleText: PropTypes.string,
     bottomText: PropTypes.string,
     elevation: PropTypes.number,
     displayMode: PropTypes.oneOf(['standard', 'compact', 'minimal']).isRequired,
@@ -107,7 +107,9 @@ export default class Card extends React.PureComponent {
                     <CardImage url={url} src={img} />
                   </div>
                   <div className="middle-text-container">
-                    <div className={`middle-text middle-text--${displayMode}`}>{middleText}</div>
+                    <div className={`middle-text middle-text--${displayMode}`}>
+                      {middleText != null ? middleText : null}
+                    </div>
                   </div>
                   {bottomText != null ? (
                     <div className="bottom-text-container">
