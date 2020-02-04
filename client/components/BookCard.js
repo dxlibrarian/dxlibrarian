@@ -48,7 +48,7 @@ export default class BookCard extends React.PureComponent {
     displayMode: PropTypes.oneOf(['standard', 'compact', 'minimal']).isRequired,
     likesCount: PropTypes.number.isRequired,
     likes: PropTypes.arrayOf(PropTypes.string).isRequired,
-    activeUsers: PropTypes.arrayOf(PropTypes.string).isRequired,
+    activeUsers: PropTypes.objectOf(PropTypes.string).isRequired, // PropTypes.arrayOf(PropTypes.string).isRequired,
     trackers: PropTypes.arrayOf(PropTypes.string).isRequired,
     userId: PropTypes.string.isRequired,
     bookId: PropTypes.string.isRequired,
@@ -77,11 +77,11 @@ export default class BookCard extends React.PureComponent {
 
     const url = `/book?id=${bookId}`;
 
-    const isActive = activeUsers.indexOf(userId) !== -1;
+    const isActive = userId in activeUsers;
     const isTracked = trackers.indexOf(userId) !== -1;
     const isLiked = likes.indexOf(userId) !== -1;
 
-    const free = count - activeUsers.length;
+    const free = count - Object.keys(activeUsers).length;
 
     return (
       <Card

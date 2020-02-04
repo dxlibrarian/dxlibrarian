@@ -276,6 +276,8 @@ export class Domain {
         })
       );
     }
+
+    await Promise.all(databasePromises);
   }
   async publish(events: Array<TEvent>) {
     const {
@@ -311,15 +313,11 @@ export class Domain {
         }
 
         entityIdsByEvent.set(event, entityIds);
-      }
-
-      for (let eventIndex = 0; eventIndex < countEvents; eventIndex++) {
-        const event = events[eventIndex];
-        const entityIds = entityIdsByEvent.get(event);
 
         const countEntityIds = entityIds.length;
 
         const entityNameIndexes = new Map<string, number>();
+
         for (let entityIdIndex = 0; entityIdIndex < countEntityIds; entityIdIndex++) {
           const { entityName, documentId } = entityIds[entityIdIndex];
 
@@ -339,6 +337,63 @@ export class Domain {
               }
             )) || {};
           let documentVersion = originalDocumentVersion;
+
+          documentVersion = ~~documentVersion + 1;
+          entityIds[entityIdIndex].documentVersion = documentVersion;
+
+          await eventStoreMeta.updateOne(
+            {
+              entityName,
+              documentId: documentIdAsObjectId
+            },
+            { $set: { documentVersion } },
+            {
+              session,
+              upsert: true
+            }
+          );
+        }
+
+        const eventId = new ObjectId();
+        const { upsertedCount, modifiedCount } = await eventStore.updateOne(
+          { _id: eventId },
+          {
+            $currentDate: {
+              timestamp: true
+            },
+            $setOnInsert: {
+              ...event,
+              entityId: entityIds
+            }
+          },
+          {
+            session,
+            upsert: true
+          }
+        );
+        if (upsertedCount !== 1 || modifiedCount !== 0) {
+          const concurrencyError: Error & { code?: number } = new Error('Concurrency error');
+          concurrencyError.code = 412;
+          throw concurrencyError;
+        }
+        // @ts-ignore
+        event.timestamp = (
+          await eventStore.findOne(
+            { _id: eventId },
+            {
+              session,
+              projection: {
+                _id: 0,
+                timestamp: 1
+              }
+            }
+          )
+        ).timestamp;
+
+        for (let entityIdIndex = 0; entityIdIndex < countEntityIds; entityIdIndex++) {
+          const { entityName, documentId } = entityIds[entityIdIndex];
+
+          const documentIdAsObjectId = new ObjectId(documentId);
 
           const collection = database.collection(entityName);
 
@@ -363,46 +418,9 @@ export class Domain {
                   effect
                 );
               }
-              documentVersion = ~~documentVersion + 1;
             }
           }
-
-          entityIds[entityIdIndex].documentVersion = documentVersion;
         }
-
-        for (const entityIdIndex of entityNameIndexes.values()) {
-          const { entityName, documentVersion, documentId } = entityIds[entityIdIndex];
-
-          const documentIdAsObjectId = new ObjectId(documentId);
-
-          await eventStoreMeta.updateOne(
-            {
-              entityName,
-              documentId: documentIdAsObjectId
-            },
-            { $set: { documentVersion } },
-            {
-              session,
-              upsert: true
-            }
-          );
-        }
-        await eventStore.updateOne(
-          { _id: new ObjectId() },
-          {
-            $currentDate: {
-              timestamp: true
-            },
-            $setOnInsert: {
-              ...event,
-              entityId: entityIds
-            }
-          },
-          {
-            session,
-            upsert: true
-          }
-        );
       }
 
       await Promise.all(databasePromises);

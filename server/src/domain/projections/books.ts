@@ -31,7 +31,7 @@ export default projection
     );
 
     const likes: Array<string> = [];
-    const activeUsers: { [key:string]: string} = {};
+    const activeUsers: { [key: string]: string } = {};
     const trackers: Array<string> = [];
     const { bookId, userId, title, author, count, pageCount, location, ISBN, tags, img } = event.payload;
 
@@ -116,7 +116,7 @@ export default projection
 
     yield merge({
       [key]: value,
-      updatedAt: event.timestamp,
+      updatedAt: event.timestamp
     });
   })
   .on(Event.BOOK_LIKED_BY_USER, function*({ event, api: { addToSet } }) {

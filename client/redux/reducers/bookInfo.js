@@ -12,7 +12,7 @@ import {
   LIKE_BOOK,
   ROLLBACK_LIKE_BOOK,
   DISLIKE_BOOK,
-  ROLLBACK_DISLIKE_BOOK,
+  ROLLBACK_DISLIKE_BOOK
 } from '../actionTypes';
 
 const initialState = {
@@ -45,92 +45,98 @@ export const bookInfo = (state = initialState, action) => {
 
     case TAKE_BOOK:
     case ROLLBACK_RETURN_BOOK: {
-      if(state.bookId === action.payload.bookId && state.book != null) {
+      if (state.bookId === action.payload.bookId && state.book != null) {
+        const activeUsers = { ...state.book.activeUsers };
+        activeUsers[action.payload.userId] = new Date().toISOString();
         return {
           ...state,
           book: {
             ...state.book,
-            activeUsers: state.book.activeUsers.filter(userId => userId !== action.payload.userId).concat(action.payload.userId)
+            activeUsers
           }
-        }
+        };
       } else {
-        return state
+        return state;
       }
     }
     case RETURN_BOOK:
     case ROLLBACK_TAKE_BOOK: {
-      if(state.bookId === action.payload.bookId && state.book != null) {
+      if (state.bookId === action.payload.bookId && state.book != null) {
+        const activeUsers = { ...state.book.activeUsers };
+        delete activeUsers[action.payload.userId];
         return {
           ...state,
           book: {
             ...state.book,
-            activeUsers: state.book.activeUsers.filter(userId => userId !== action.payload.userId)
+            activeUsers
           }
-        }
+        };
       } else {
-        return state
+        return state;
       }
     }
 
     case LIKE_BOOK:
     case ROLLBACK_DISLIKE_BOOK: {
-      if(state.bookId === action.payload.bookId && state.book != null) {
+      if (state.bookId === action.payload.bookId && state.book != null) {
         const nextState = {
           ...state,
           book: {
             ...state.book,
             likes: state.book.likes.filter(userId => userId !== action.payload.userId).concat(action.payload.userId)
           }
-        }
-        nextState.book.likesCount = nextState.book.likes.length
-        return nextState
+        };
+        nextState.book.likesCount = nextState.book.likes.length;
+        return nextState;
       } else {
-        return state
+        return state;
       }
     }
     case DISLIKE_BOOK:
     case ROLLBACK_LIKE_BOOK: {
-      if(state.bookId === action.payload.bookId && state.book != null) {
+      if (state.bookId === action.payload.bookId && state.book != null) {
         const nextState = {
           ...state,
           book: {
             ...state.book,
             likes: state.book.likes.filter(userId => userId !== action.payload.userId)
           }
-        }
-        nextState.book.likesCount = nextState.book.likes.length
-        return nextState
+        };
+        nextState.book.likesCount = nextState.book.likes.length;
+        return nextState;
       } else {
-        return state
+        return state;
       }
     }
 
     case TRACK_BOOK:
     case ROLLBACK_TRACK_BOOK: {
-      if(state.bookId === action.payload.bookId && state.book != null) {
+      if (state.bookId === action.payload.bookId && state.book != null) {
         return {
           ...state,
           book: {
             ...state.book,
-            trackers: state.book.trackers.filter(userId => userId !== action.payload.userId).concat(action.payload.userId)
+            trackers: state.book.trackers
+              .filter(userId => userId !== action.payload.userId)
+              .concat(action.payload.userId)
           }
-        }
+        };
       } else {
-        return state
+        return state;
       }
     }
     case UNTRACK_BOOK:
     case ROLLBACK_UNTRACK_BOOK: {
-      if(state.bookId === action.payload.bookId && state.book != null) {
+      if (state.bookId === action.payload.bookId && state.book != null) {
         return {
           ...state,
           book: {
             ...state.book,
             trackers: state.book.trackers.filter(userId => userId !== action.payload.userId)
           }
-        }
+        };
       } else {
-        return state
+        return state;
       }
     }
 

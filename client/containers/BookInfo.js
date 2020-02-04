@@ -98,9 +98,18 @@ const BookInfo = ({ bookId }) => {
         onLikeBook={onLikeBook}
         onDislikeBook={onDislikeBook}
       />
-      {users.map(({ name, email, takeTime, avatar }, index) => (
-        <UserCard key={index} name={name} email={email} takeTime={takeTime} displayMode={displayMode} avatar={avatar} />
-      ))}
+      {users
+        .filter(({ userId }) => activeUsers[userId] != null)
+        .map(({ userId, name, email, avatar }, index) => (
+          <UserCard
+            key={index}
+            name={name}
+            email={email}
+            date={activeUsers[userId]}
+            displayMode={displayMode}
+            avatar={avatar}
+          />
+        ))}
     </CardContainer>
   );
 };

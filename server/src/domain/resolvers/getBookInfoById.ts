@@ -50,7 +50,7 @@ export default resolver.name(Resolver.GET_BOOK_INFO_BY_ID).on(async ({ database,
   const users = await collectionUsers
     .find(
       {
-        userId: { $in: book.activeUsers }
+        userId: { $in: Object.keys(book.activeUsers) }
       },
       {
         session,

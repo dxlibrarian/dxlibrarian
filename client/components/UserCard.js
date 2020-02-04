@@ -5,11 +5,23 @@ import Card from './Card';
 
 const defaultImage = '/images/avatar-placeholder.png';
 
-function CardImage({ displayMode, name, email, avatar, takeTime }) {
+function CardImage({ displayMode, name, email, avatar, date }) {
+  const today = new Date(date);
+  let dd = today.getDate();
+  let mm = today.getMonth() + 1;
+
+  const yyyy = today.getFullYear();
+  if (dd < 10) {
+    dd = `0${dd}`;
+  }
+  if (mm < 10) {
+    mm = `0${mm}`;
+  }
+
   return (
     <Card
       topText={name}
-      bottomText={`${takeTime} - NOW`}
+      bottomText={`${dd}/${mm}/${yyyy} - NOW`}
       displayMode={displayMode}
       elevation={1}
       img={avatar == null ? defaultImage : avatar}
@@ -24,7 +36,7 @@ CardImage.propTypes = {
   name: PropTypes.string.isRequired,
   email: PropTypes.string.isRequired,
   avatar: PropTypes.string,
-  takeTime: PropTypes.string
+  date: PropTypes.string
 };
 
 export default memo(CardImage);

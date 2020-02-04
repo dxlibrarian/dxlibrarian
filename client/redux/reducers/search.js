@@ -19,8 +19,7 @@ import {
   LIKE_BOOK,
   ROLLBACK_LIKE_BOOK,
   DISLIKE_BOOK,
-  ROLLBACK_DISLIKE_BOOK,
-  GET_BOOK_INFO_BY_ID_SUCCESS
+  ROLLBACK_DISLIKE_BOOK
 } from '../actionTypes';
 
 const sortFunctions = {
@@ -109,40 +108,32 @@ export const search = (state = initialState, action) => {
       };
     }
 
-    // case GET_BOOK_INFO_BY_ID_SUCCESS: {
-    //   return {
-    //     ...state,
-    //     books: getNextBooks(
-    //       state.books,
-    //       action.payload.bookId,
-    //       prevBook => ({
-    //         ...prevBook,
-    //         ...action.payload.book,
-    //         likesCount: ~~action.payload.book.likesCount + 1
-    //       }),
-    //       true
-    //     )
-    //   };
-    // }
-
     case TAKE_BOOK:
     case ROLLBACK_RETURN_BOOK: {
       return {
         ...state,
-        books: getNextBooks(state.books, action.payload.bookId, book => ({
-          ...book,
-          activeUsers: book.activeUsers.filter(userId => userId !== action.payload.userId).concat(action.payload.userId)
-        }))
+        books: getNextBooks(state.books, action.payload.bookId, book => {
+          const activeUsers = { ...book.activeUsers };
+          activeUsers[action.payload.userId] = new Date().toISOString();
+          return {
+            ...book,
+            activeUsers
+          };
+        })
       };
     }
     case RETURN_BOOK:
     case ROLLBACK_TAKE_BOOK: {
       return {
         ...state,
-        books: getNextBooks(state.books, action.payload.bookId, book => ({
-          ...book,
-          activeUsers: book.activeUsers.filter(userId => userId !== action.payload.userId)
-        }))
+        books: getNextBooks(state.books, action.payload.bookId, book => {
+          const activeUsers = { ...book.activeUsers };
+          delete activeUsers[action.payload.userId];
+          return {
+            ...book,
+            activeUsers
+          };
+        })
       };
     }
 
@@ -154,9 +145,9 @@ export const search = (state = initialState, action) => {
           const nextBook = {
             ...book,
             likes: book.likes.filter(userId => userId !== action.payload.userId).concat(action.payload.userId)
-          }
-          nextBook.likesCount = nextBook.likes.length
-          return nextBook
+          };
+          nextBook.likesCount = nextBook.likes.length;
+          return nextBook;
         })
       };
     }
@@ -168,9 +159,9 @@ export const search = (state = initialState, action) => {
           const nextBook = {
             ...book,
             likes: book.likes.filter(userId => userId !== action.payload.userId)
-          }
-          nextBook.likesCount = nextBook.likes.length
-          return nextBook
+          };
+          nextBook.likesCount = nextBook.likes.length;
+          return nextBook;
         })
       };
     }
