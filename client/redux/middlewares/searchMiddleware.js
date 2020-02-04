@@ -35,6 +35,15 @@ export const searchMiddleware = api => store => {
             searchBy,
             filterBy
           });
+
+          // TODO
+          books = books.map(
+            book => Array.isArray(book.activeUsers) ? book : ({
+              ...book,
+              activeUsers: Object.keys(book.activeUsers)
+            })
+          )
+
         } catch (error) {
           store.dispatch(searchBooksCancel(text, searchBy, filterBy, requestId));
           break;

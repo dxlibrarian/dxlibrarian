@@ -109,21 +109,21 @@ export const search = (state = initialState, action) => {
       };
     }
 
-    case GET_BOOK_INFO_BY_ID_SUCCESS: {
-      return {
-        ...state,
-        books: getNextBooks(
-          state.books,
-          action.payload.bookId,
-          prevBook => ({
-            ...prevBook,
-            ...action.payload.book,
-            likesCount: ~~action.payload.book.likesCount + 1
-          }),
-          true
-        )
-      };
-    }
+    // case GET_BOOK_INFO_BY_ID_SUCCESS: {
+    //   return {
+    //     ...state,
+    //     books: getNextBooks(
+    //       state.books,
+    //       action.payload.bookId,
+    //       prevBook => ({
+    //         ...prevBook,
+    //         ...action.payload.book,
+    //         likesCount: ~~action.payload.book.likesCount + 1
+    //       }),
+    //       true
+    //     )
+    //   };
+    // }
 
     case TAKE_BOOK:
     case ROLLBACK_RETURN_BOOK: {
@@ -150,22 +150,28 @@ export const search = (state = initialState, action) => {
     case ROLLBACK_DISLIKE_BOOK: {
       return {
         ...state,
-        books: getNextBooks(state.books, action.payload.bookId, book => ({
-          ...book,
-          likes: book.likes.filter(userId => userId !== action.payload.userId).concat(action.payload.userId),
-          likesCount: ~~book.likesCount + 1
-        }))
+        books: getNextBooks(state.books, action.payload.bookId, book => {
+          const nextBook = {
+            ...book,
+            likes: book.likes.filter(userId => userId !== action.payload.userId).concat(action.payload.userId)
+          }
+          nextBook.likesCount = nextBook.likes.length
+          return nextBook
+        })
       };
     }
     case DISLIKE_BOOK:
     case ROLLBACK_LIKE_BOOK: {
       return {
         ...state,
-        books: getNextBooks(state.books, action.payload.bookId, book => ({
-          ...book,
-          likes: book.likes.filter(userId => userId !== action.payload.userId),
-          likesCount: ~~book.likesCount - 1
-        }))
+        books: getNextBooks(state.books, action.payload.bookId, book => {
+          const nextBook = {
+            ...book,
+            likes: book.likes.filter(userId => userId !== action.payload.userId)
+          }
+          nextBook.likesCount = nextBook.likes.length
+          return nextBook
+        })
       };
     }
 

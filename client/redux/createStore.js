@@ -1,4 +1,4 @@
-import NextRouter from 'next/router';
+import { parse } from 'query-string';
 import Cookies from 'js-cookie';
 import { createStore as createReduxStore, combineReducers, applyMiddleware, compose } from 'redux';
 
@@ -19,7 +19,8 @@ export const createStore = () => {
   );
 
   if (IS_CLIENT) {
-    let jwtToken = NextRouter.query.jwtToken;
+    let jwtToken;
+    ({ jwtToken } = parse(window.location.search));
     if (jwtToken == null) {
       jwtToken = Cookies.get('jwtToken');
     }

@@ -31,11 +31,13 @@ export default projection
     );
 
     const likes: Array<string> = [];
-    const activeUsers: Array<string> = [];
+    const activeUsers: { [key:string]: string} = {};
     const trackers: Array<string> = [];
     const { bookId, userId, title, author, count, pageCount, location, ISBN, tags, img } = event.payload;
 
     yield set({
+      createdAt: event.timestamp,
+      updatedAt: event.timestamp,
       userId,
       bookId,
       title,
@@ -61,7 +63,7 @@ export default projection
 
     yield remove();
   })
-  .on(Event.BOOK_UPDATED, function*({ event, api: { set } }) {
+  .on(Event.BOOK_UPDATED, function*({ event, api: { merge } }) {
     validate(
       event.payload,
       tcomb.struct({
@@ -94,7 +96,7 @@ export default projection
           tcomb.struct({
             bookId: tcomb.String,
             key: tcomb.String,
-            value: tcomb.String
+            value: tcomb.Number
           })
         );
         break;
@@ -112,7 +114,10 @@ export default projection
       }
     }
 
-    yield set(key, value);
+    yield merge({
+      [key]: value,
+      updatedAt: event.timestamp,
+    });
   })
   .on(Event.BOOK_LIKED_BY_USER, function*({ event, api: { addToSet } }) {
     validate(
@@ -167,7 +172,7 @@ export default projection
     yield pullEQ('trackers', userId);
   })
 
-  .on(Event.BOOK_TAKEN_BY_USER, function*({ event, api: { addToSet, pullEQ } }) {
+  .on(Event.BOOK_TAKEN_BY_USER, function*({ event, api: { set, pullEQ } }) {
     validate(
       event.payload,
       tcomb.struct({
@@ -178,10 +183,9 @@ export default projection
 
     const { userId } = event.payload;
 
-    yield addToSet('activeUsers', userId);
-    yield pullEQ('trackers', userId);
+    yield set(['activeUsers', userId], event.timestamp);
   })
-  .on(Event.BOOK_RETURNED_BY_USER, function*({ event, api: { pullEQ } }) {
+  .on(Event.BOOK_RETURNED_BY_USER, function*({ event, api: { remove } }) {
     validate(
       event.payload,
       tcomb.struct({
@@ -192,5 +196,5 @@ export default projection
 
     const { userId } = event.payload;
 
-    yield pullEQ('activeUsers', userId);
+    yield remove(['activeUsers', userId]);
   });

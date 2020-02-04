@@ -44,7 +44,7 @@ function bookInfoSelector(state) {
 
   return {
     userId: state.profile.userId,
-    book: state.search.books.find(getBookById(state.bookInfo.bookId)),
+    book: state.bookInfo.book,
     users: state.bookInfo.users,
     displayMode: state.search.displayMode.toLowerCase()
   };
