@@ -22,7 +22,7 @@ export default projection
         title: tcomb.String,
         author: tcomb.String,
         count: tcomb.Number,
-        pageCount: tcomb.Number,
+        pageCount: tcomb.maybe(tcomb.Number),
         location: tcomb.enums.of([Location.TULA, Location.KALUGA, Location.SPB]),
         ISBN: tcomb.maybe(tcomb.String),
         tags: tcomb.list(tcomb.String),
