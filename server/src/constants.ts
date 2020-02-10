@@ -108,6 +108,7 @@ export enum SortBy {
 
 export enum Resolver {
   GET_ALL_USERS = 'getAllUsers',
+  GET_ALL_USERS_GROUP_BY_EMAIL = 'getAllUsersGroupByEmail',
   GET_USER = 'getUser',
   SEARCH_BOOKS = 'searchBooks',
   GET_BOOK_INFO_BY_ID = 'getBookInfoById',
@@ -137,6 +138,7 @@ export type BufferEncoding =
 
 export enum LambdaEventType {
   IMPORT_USERS = 'IMPORT_USERS',
+  IMPORT_OLD_EVENTS = 'IMPORT_OLD_EVENTS',
   BUILD_PROJECTIONS = 'BUILD_PROJECTIONS',
   DROP_PROJECTIONS = 'DROP_PROJECTIONS',
   DROP_PROJECTIONS_AND_EVENT_STORE = 'DROP_PROJECTIONS_AND_EVENT_STORE',
@@ -156,6 +158,9 @@ export type GatewayEvent = {
 export type LambdaEvent =
   | {
       type: LambdaEventType.IMPORT_USERS;
+    }
+  | {
+      type: LambdaEventType.IMPORT_OLD_EVENTS;
     }
   | {
       type: LambdaEventType.BUILD_PROJECTIONS;

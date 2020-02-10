@@ -1,5 +1,5 @@
 export type TEvent = {
   type: string;
-  timestamp?: number;
+  timestamp?: Date | string;
   payload?: any;
 };

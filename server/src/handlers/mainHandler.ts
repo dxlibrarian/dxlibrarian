@@ -27,13 +27,6 @@ export async function mainHandler(originalReq: Request<any, any>, originalRes: R
   log.verbose('headers:', req.headers);
 
   try {
-    // if (req.method === 'OPTIONS') {
-    //   cors(res);
-    //   res.status(200);
-    //   res.end();
-    //   return;
-    // }
-
     switch (true) {
       case checkPath(req, '/auth/callback', ['GET', 'POST']): {
         return await authHandler(req, res);

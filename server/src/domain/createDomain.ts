@@ -5,6 +5,7 @@ import { domain } from '../reventex/server';
 import users from './projections/users';
 import books from './projections/books';
 import getAllUsers from './resolvers/getAllUsers';
+import getAllUsersGroupByEmail from './resolvers/getAllUsersGroupByEmail';
 import getUser from './resolvers/getUser';
 import searchBooks from './resolvers/searchBooks';
 import getBookInfoById from './resolvers/getBookInfoById';
@@ -31,4 +32,4 @@ export const createDomain = () =>
     .database(DATABASE_NAME)
     .eventStore(EVENT_STORE_COLLECTION_NAME)
     .projections([users, books])
-    .resolvers([getAllUsers, getUser, searchBooks, getBookInfoById]);
+    .resolvers([getAllUsers, getAllUsersGroupByEmail, getUser, searchBooks, getBookInfoById]);

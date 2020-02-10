@@ -6,6 +6,7 @@ import { dropProjections } from './executors/dropProjections';
 import { dropProjectionsAndEventStore } from './executors/dropProjectionsAndEventStore';
 import { buildProjections } from './executors/buildProjections';
 import { createBook } from './executors/createBook';
+import { importOldEvents } from './executors/importOldEvents';
 import { read } from './executors/read';
 import { getLog } from './utils/getLog';
 
@@ -40,6 +41,9 @@ export default (event: any, context: LambdaContext) => {
     }
     case LambdaEventType.CREATE_BOOK: {
       return createBook(event.payload);
+    }
+    case LambdaEventType.IMPORT_OLD_EVENTS: {
+      return importOldEvents();
     }
     case LambdaEventType.READ: {
       return read(event.payload);

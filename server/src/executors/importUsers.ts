@@ -1,7 +1,7 @@
 import ClientCredentials from 'client-credentials';
 import GraphService from 'graph-service';
 
-import { entityId } from '../reventex/server';
+import { entityId, Domain } from '../reventex/server';
 
 import { isUser } from '../auth/isUser';
 import { prepareUser } from '../auth/prepareUser';
@@ -19,54 +19,64 @@ const azureCredentials = new ClientCredentials(AZURE_CLIENT_TENANT, AZURE_CLIENT
 
 const graphService = new GraphService(azureCredentials, 'beta');
 
-export async function importUsers() {
-  const { read, publish, close } = createDomain();
+export async function process(domain: Domain) {
+  const { read } = domain;
 
-  try {
-    log.debug('Executor "importUsers" has been started');
-    const [graphServiceResponse, resolverResult] = await Promise.all([
-      graphService.all('/users'),
-      read(Resolver.GET_ALL_USERS, {})
-    ]);
-    const azureUsers: Array<AzureUser> = graphServiceResponse.data;
-    const mongoUsers: Map<string, DXLibrarianUser> = resolverResult;
+  const [graphServiceResponse, resolverResult] = await Promise.all([
+    graphService.all('/users'),
+    read(Resolver.GET_ALL_USERS, {})
+  ]);
+  const azureUsers: Array<AzureUser> = graphServiceResponse.data;
+  const mongoUsers: Map<string, DXLibrarianUser> = resolverResult;
 
-    log.debug('Mongo and Azure users have been fetched');
+  log.debug('Mongo and Azure users have been fetched');
 
-    const events: Array<{ type: string; payload?: { [key: string]: any } }> = [];
+  const events: Array<{ type: string; payload?: { [key: string]: any } }> = [];
 
-    for (const user of azureUsers.filter(isUser).map(prepareUser)) {
-      const mongoUser = mongoUsers.get(user.userId);
-      if (mongoUser != null) {
-        if (user.name !== mongoUser.name || user.email !== mongoUser.email) {
-          events.push({
-            type: Event.USER_UPDATED,
-            payload: {
-              ...user,
-              userId: entityId(EntityName.USER, user.userId)
-            }
-          });
-        }
-      } else {
+  for (const user of azureUsers.filter(isUser).map(prepareUser)) {
+    const mongoUser = mongoUsers.get(user.userId);
+    if (mongoUser != null) {
+      if (user.name !== mongoUser.name || user.email !== mongoUser.email) {
         events.push({
-          type: Event.USER_CREATED,
+          type: Event.USER_UPDATED,
           payload: {
             ...user,
             userId: entityId(EntityName.USER, user.userId)
           }
         });
       }
-      mongoUsers.delete(user.userId);
-    }
-    for (const [, { userId, ...other }] of mongoUsers) {
+    } else {
       events.push({
-        type: Event.USER_REMOVED,
+        type: Event.USER_CREATED,
         payload: {
-          ...other,
-          userId: entityId(EntityName.USER, userId)
+          ...user,
+          userId: entityId(EntityName.USER, user.userId)
         }
       });
     }
+    mongoUsers.delete(user.userId);
+  }
+  for (const [, { userId, ...other }] of mongoUsers) {
+    events.push({
+      type: Event.USER_REMOVED,
+      payload: {
+        ...other,
+        userId: entityId(EntityName.USER, userId)
+      }
+    });
+  }
+
+  return events;
+}
+
+export async function importUsers() {
+  const domain = createDomain();
+
+  const { publish, close } = domain;
+
+  try {
+    log.debug('Executor "importUsers" has been started');
+    const events = await process(domain);
 
     log.debug(`Events count: ${events.length}`);
     log.debug(`Events:`, events);

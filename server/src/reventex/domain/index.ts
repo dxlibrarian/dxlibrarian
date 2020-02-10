@@ -355,22 +355,23 @@ export class Domain {
         }
 
         const eventId = new ObjectId();
-        const { upsertedCount, modifiedCount } = await eventStore.updateOne(
-          { _id: eventId },
-          {
-            $currentDate: {
-              timestamp: true
-            },
-            $setOnInsert: {
-              ...event,
-              entityId: entityIds
-            }
+        const eventStoreItem = {
+          $currentDate: {
+            timestamp: true
           },
-          {
-            session,
-            upsert: true
+          $setOnInsert: {
+            ...event,
+            entityId: entityIds
           }
-        );
+        };
+        if (event.timestamp != null) {
+          event.timestamp = new Date(event.timestamp);
+          delete eventStoreItem.$currentDate;
+        }
+        const { upsertedCount, modifiedCount } = await eventStore.updateOne({ _id: eventId }, eventStoreItem, {
+          session,
+          upsert: true
+        });
         if (upsertedCount !== 1 || modifiedCount !== 0) {
           const concurrencyError: Error & { code?: number } = new Error('Concurrency error');
           concurrencyError.code = 412;

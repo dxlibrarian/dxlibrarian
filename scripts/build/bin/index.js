@@ -15,6 +15,11 @@ const main = async () => {
     stdio: 'inherit'
   });
 
+  await execSync(`cp dxlibrarian-events-24.01.2020.txt server/lib/executors`, {
+    cwd: monorepoDir,
+    stdio: 'inherit'
+  });
+
   await new Promise((resolve, reject) => {
     const output = fs.createWriteStream(serverZipFile, { flags: 'w+' });
 

@@ -77,41 +77,42 @@ const BookInfo = ({ bookId }) => {
 
   const { title, author, count, img, likesCount, likes, activeUsers, trackers } = book;
 
-  return (
-    <CardContainer>
-      <BookCard
-        bookId={bookId}
-        userId={userId}
-        title={title}
-        author={author}
-        count={count}
-        displayMode={displayMode}
-        img={img}
-        likes={likes}
-        likesCount={likesCount}
-        activeUsers={activeUsers}
-        trackers={trackers}
-        onTakeBook={onTakeBook}
-        onReturnBook={onReturnBook}
-        onTrackBook={onTrackBook}
-        onUntrackBook={onUntrackBook}
-        onLikeBook={onLikeBook}
-        onDislikeBook={onDislikeBook}
-      />
-      {users
-        .filter(({ userId }) => activeUsers[userId] != null)
-        .map(({ userId, name, email, avatar }, index) => (
-          <UserCard
-            key={index}
-            name={name}
-            email={email}
-            date={activeUsers[userId]}
-            displayMode={displayMode}
-            avatar={avatar}
-          />
-        ))}
-    </CardContainer>
-  );
+  const children = [
+    <BookCard
+      key={0}
+      bookId={bookId}
+      userId={userId}
+      title={title}
+      author={author}
+      count={count}
+      displayMode={displayMode}
+      img={img}
+      likes={likes}
+      likesCount={likesCount}
+      activeUsers={activeUsers}
+      trackers={trackers}
+      onTakeBook={onTakeBook}
+      onReturnBook={onReturnBook}
+      onTrackBook={onTrackBook}
+      onUntrackBook={onUntrackBook}
+      onLikeBook={onLikeBook}
+      onDislikeBook={onDislikeBook}
+    />,
+    ...users
+      .filter(({ userId }) => activeUsers[userId] != null)
+      .map(({ userId, name, email, avatar }, index) => (
+        <UserCard
+          key={index+1}
+          name={name}
+          email={email}
+          date={activeUsers[userId]}
+          displayMode={displayMode}
+          avatar={avatar}
+        />
+      ))
+  ];
+
+  return <CardContainer>{children}</CardContainer>;
 };
 
 BookInfo.propTypes = {
