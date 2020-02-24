@@ -65,7 +65,6 @@ const BookInfo = ({ bookId }) => {
   const [isMounted, updateMountStatus] = useState(null);
   useEffect(() => {
     if (!isMounted) {
-      console.log('bookinfo mounted');
       updateMountStatus(true);
       getBookInfoById(bookId);
     }
@@ -102,7 +101,7 @@ const BookInfo = ({ bookId }) => {
       .filter(({ userId }) => activeUsers[userId] != null)
       .map(({ userId, name, email, avatar }, index) => (
         <UserCard
-          key={index+1}
+          key={index + 1}
           name={name}
           email={email}
           date={activeUsers[userId]}

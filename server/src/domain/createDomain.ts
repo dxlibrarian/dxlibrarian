@@ -4,11 +4,13 @@ import { domain } from '../reventex/server';
 
 import users from './projections/users';
 import books from './projections/books';
-import getAllUsers from './resolvers/getAllUsers';
+import getAllUsersGroupByUserId from './resolvers/getAllUsersGroupByUserId';
 import getAllUsersGroupByEmail from './resolvers/getAllUsersGroupByEmail';
 import getUser from './resolvers/getUser';
 import searchBooks from './resolvers/searchBooks';
 import getBookInfoById from './resolvers/getBookInfoById';
+import showMyActiveBooks from './resolvers/showMyActiveBooks';
+import showMyTrackedBooks from './resolvers/showMyTrackedBooks';
 
 import {
   MONGO_USER,
@@ -32,4 +34,12 @@ export const createDomain = () =>
     .database(DATABASE_NAME)
     .eventStore(EVENT_STORE_COLLECTION_NAME)
     .projections([users, books])
-    .resolvers([getAllUsers, getAllUsersGroupByEmail, getUser, searchBooks, getBookInfoById]);
+    .resolvers([
+      getAllUsersGroupByUserId,
+      getAllUsersGroupByEmail,
+      getUser,
+      getBookInfoById,
+      searchBooks,
+      showMyActiveBooks,
+      showMyTrackedBooks
+    ]);

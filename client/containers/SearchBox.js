@@ -111,7 +111,6 @@ function SearchBox() {
 
   useEffect(() => {
     if (!isMounted) {
-      console.log('searchbox mounted');
       updateMountStatus(true);
       onChangeText({ target: { value: text } });
     }
@@ -125,16 +124,15 @@ function SearchBox() {
 
   return (
     <div>
-      <Paper elevation={4} component="form" className={classes.searchBox}>
-        <FormControl fullWidth>
-          <InputBase
-            placeholder={placeholder}
-            inputProps={{ 'aria-label': 'search' }}
-            autoFocus={true}
-            value={text}
-            onChange={onChangeText}
-          />
-        </FormControl>
+      <Paper elevation={4} className={classes.searchBox}>
+        <InputBase
+          fullWidth
+          placeholder={placeholder}
+          inputProps={{ 'aria-label': 'search' }}
+          autoFocus={true}
+          value={text}
+          onChange={onChangeText}
+        />
         <IconButton aria-label="search">
           <SearchIcon />
         </IconButton>

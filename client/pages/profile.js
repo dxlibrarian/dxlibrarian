@@ -1,12 +1,12 @@
 import React from 'react';
 
 import Layout from '../components/Layout';
-import ComingSoon from '../components/ComingSoon';
+import MyBooks from '../components/MyBooks';
 
-export default function Profile() {
+export default function Page() {
   return (
     <Layout>
-      <ComingSoon />
+      <MyBooks />
     </Layout>
   );
 }

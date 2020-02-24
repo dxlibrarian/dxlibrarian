@@ -24,7 +24,7 @@ export async function process(domain: Domain) {
 
   const [graphServiceResponse, resolverResult] = await Promise.all([
     graphService.all('/users'),
-    read(Resolver.GET_ALL_USERS, {})
+    read(Resolver.GET_ALL_USERS_GROUP_BY_USER_ID, {})
   ]);
   const azureUsers: Array<AzureUser> = graphServiceResponse.data;
   const mongoUsers: Map<string, DXLibrarianUser> = resolverResult;

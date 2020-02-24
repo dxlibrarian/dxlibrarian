@@ -4,6 +4,8 @@ import { searchMiddleware } from './searchMiddleware';
 import { settingsMiddleware } from './settingsMiddleware';
 import { publishMiddleware } from './publishMiddleware';
 import { getBookInfoByIdMiddleware } from './getBookInfoByIdMiddleware';
+import { showMyActiveBooksMiddleware } from './showMyActiveBooksMiddleware';
+import { showMyTrackedBooksMiddleware } from './showMyTrackedBooksMiddleware';
 
 export const middlewares = [
   loginMiddleware,
@@ -11,5 +13,7 @@ export const middlewares = [
   searchMiddleware,
   settingsMiddleware,
   publishMiddleware,
-  getBookInfoByIdMiddleware
+  getBookInfoByIdMiddleware,
+  showMyActiveBooksMiddleware,
+  showMyTrackedBooksMiddleware
 ];

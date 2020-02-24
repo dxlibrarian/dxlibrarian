@@ -107,14 +107,13 @@ export enum SortBy {
 }
 
 export enum Resolver {
-  GET_ALL_USERS = 'getAllUsers',
+  GET_ALL_USERS_GROUP_BY_USER_ID = 'getAllUsersGroupByUserId',
   GET_ALL_USERS_GROUP_BY_EMAIL = 'getAllUsersGroupByEmail',
   GET_USER = 'getUser',
   SEARCH_BOOKS = 'searchBooks',
   GET_BOOK_INFO_BY_ID = 'getBookInfoById',
   SHOW_MY_ACTIVE_BOOKS = 'showMyActiveBooks',
-  SHOW_MY_TRACKED_BOOKS = 'showMyTrackedBooks',
-  SHOW_MY_BOOK_HISTORY = 'showMyBookHistory'
+  SHOW_MY_TRACKED_BOOKS = 'showMyTrackedBooks'
 }
 
 export const DATABASE_NAME = 'DXLibrarian';

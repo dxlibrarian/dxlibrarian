@@ -18,7 +18,7 @@ const SKIP = Symbol();
 function getOldEvents(userByEmail: Map<string, DXLibrarianUser>) {
   const mongoEvents = fs.readFileSync(path.join(__dirname, 'dxlibrarian-events-24.01.2020.txt')).toString('utf8');
 
-  let events: Array<any> = JSON.parse(
+  const events: Array<any> = JSON.parse(
     '[' +
       mongoEvents
         .trim()

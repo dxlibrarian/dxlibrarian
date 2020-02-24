@@ -7,12 +7,9 @@ import { validate } from '../../utils/validate';
 export default projection
   .name(EntityName.BOOK)
   .index({ bookId: 1 }, { unique: true })
-  .index({ userId: 1 })
   .index({ title: 1 })
   .index({ author: 1 })
   .index({ location: 1 })
-  .index({ tags: 1 })
-  .index({ likes: 1 })
   .on(Event.BOOK_CREATED, function*({ event, api: { set } }) {
     validate(
       event.payload,
@@ -172,7 +169,7 @@ export default projection
     yield pullEQ('trackers', userId);
   })
 
-  .on(Event.BOOK_TAKEN_BY_USER, function*({ event, api: { set, pullEQ } }) {
+  .on(Event.BOOK_TAKEN_BY_USER, function*({ event, api: { set } }) {
     validate(
       event.payload,
       tcomb.struct({

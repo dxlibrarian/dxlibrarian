@@ -4,7 +4,7 @@ import React from 'react';
 import Layout from '../components/Layout';
 import BookInfo from '../containers/BookInfo';
 
-export default function Book() {
+export default function Page() {
   const {
     query: { id: bookId }
   } = useRouter();

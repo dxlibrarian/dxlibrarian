@@ -25,7 +25,13 @@ import {
   ROLLBACK_DISLIKE_BOOK,
   GET_BOOK_INFO_BY_ID_REQUEST,
   GET_BOOK_INFO_BY_ID_SUCCESS,
-  GET_BOOK_INFO_BY_ID_FAILURE
+  GET_BOOK_INFO_BY_ID_FAILURE,
+  SHOW_MY_ACTIVE_BOOKS_REQUEST,
+  SHOW_MY_ACTIVE_BOOKS_SUCCESS,
+  SHOW_MY_ACTIVE_BOOKS_FAILURE,
+  SHOW_MY_TRACKED_BOOKS_REQUEST,
+  SHOW_MY_TRACKED_BOOKS_SUCCESS,
+  SHOW_MY_TRACKED_BOOKS_FAILURE
 } from './actionTypes';
 
 export const noop = () => ({
@@ -47,6 +53,42 @@ export const authorize = (jwtToken, settings) => ({
     jwtToken,
     settings
   }
+});
+
+export const showMyActiveBooksRequest = () => ({
+  type: SHOW_MY_ACTIVE_BOOKS_REQUEST,
+  payload: {}
+});
+
+export const showMyActiveBooksSuccess = books => ({
+  type: SHOW_MY_ACTIVE_BOOKS_SUCCESS,
+  payload: {
+    books
+  }
+});
+
+export const showMyActiveBooksFailure = error => ({
+  type: SHOW_MY_ACTIVE_BOOKS_FAILURE,
+  payload: {},
+  error
+});
+
+export const showMyTrackedBooksRequest = () => ({
+  type: SHOW_MY_TRACKED_BOOKS_REQUEST,
+  payload: {}
+});
+
+export const showMyTrackedBooksSuccess = books => ({
+  type: SHOW_MY_TRACKED_BOOKS_SUCCESS,
+  payload: {
+    books
+  }
+});
+
+export const showMyTrackedBooksFailure = error => ({
+  type: SHOW_MY_TRACKED_BOOKS_FAILURE,
+  payload: {},
+  error
 });
 
 export const searchBooksRequest = (text, searchBy, filterBy, requestId) => ({

@@ -95,6 +95,16 @@ export function createApi() {
         filterBy
       });
     },
+    showMyActiveBooks() {
+      return get('/api/read', {
+        resolverName: 'showMyActiveBooks'
+      });
+    },
+    showMyTrackedBooks() {
+      return get('/api/read', {
+        resolverName: 'showMyTrackedBooks'
+      });
+    },
     publish({ events }) {
       validate(
         {
